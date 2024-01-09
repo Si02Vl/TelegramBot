@@ -1,69 +1,42 @@
-﻿using Telegram.Bot;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Telegram.Bot;
+using Telegram.Bot.Args;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
-namespace Bot
+class Program
 {
-    class Bot
+    static async Task Main()
     {
-        static ITelegramBotClient bot = new TelegramBotClient("5396048539:AAEugLYh52N30Khic5HilGXyQvFDXXvyn94");
-        
-        public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        var botToken = "6612286833:AAEOSOuC0GppURuDZdUN2KkUzwrGUSy5lFQ";
+        var botClient = new TelegramBotClient(botToken);
+
+        botClient.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync));
+
+        Console.WriteLine("Bot started. Press any key to exit.");
+        Console.ReadKey();
+
+        //await botClient.StopPollAsync();
+    }
+
+    static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        if (update.Message is { } message && message.From is { } sender)
         {
-            var message = update.Message;
-
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
-            
-            if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+            if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
             {
-                if (message.Text.ToLower() == "/start")
-                {
-                    await botClient.SendTextMessageAsync(message.Chat, "Введена команда START");
-                    return;
-                }
-                else if (message.Text.ToLower() == "/end")
-                {
-                    await botClient.SendTextMessageAsync(message.Chat, "Введена команда END");
-                    return;
-                }
-            }
-            
-            // Получаем список всех пользователей бота
-            var botUpdates = await botClient.GetUpdatesAsync();
-            var users = botUpdates.Select(u => u.Message.Chat).Distinct(); // покопаться тут!!!!
-
-            // Отправляем сообщение каждому пользователю
-            foreach (var user in users)
-            {
-                await botClient.SendTextMessageAsync(user.Id, $"Дата сообщения: {message.Date}, " +
-                                                                   $"Пользователь: {message.Chat.FirstName}, " +
-                                                                   $"Смолвил: {message.Text}");
-                await botClient.SendTextMessageAsync(message.Chat, "Бот говорит Всем - Leerooooooy Jenkins!!!");
+                string text = $"Привет, я бот! Вы сказали: {message.Text}";
+                await botClient.SendTextMessageAsync(chat.Id, text, cancellationToken: cancellationToken);
             }
         }
+    }
 
-        public static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
-        {
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
-        }
-
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Запущен бот " + bot.GetMeAsync().Result.FirstName);
-
-            var cts = new CancellationTokenSource();
-            var cancellationToken = cts.Token;
-            var receiverOptions = new ReceiverOptions
-            {
-                AllowedUpdates = { }, // receive all update types
-            };
-            bot.StartReceiving(
-                HandleUpdateAsync,
-                HandleErrorAsync,
-                receiverOptions,
-                cancellationToken
-            );
-            Console.ReadLine();
-        }
+    static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    {
+        Console.WriteLine(exception.Message);
+        return Task.CompletedTask;
     }
 }
