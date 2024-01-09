@@ -13,9 +13,10 @@ namespace Bot
             var message = update.Message;
 
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
+            
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
-                /*if (message.Text.ToLower() == "/start")
+                if (message.Text.ToLower() == "/start")
                 {
                     await botClient.SendTextMessageAsync(message.Chat, "Введена команда START");
                     return;
@@ -25,39 +26,24 @@ namespace Bot
                     await botClient.SendTextMessageAsync(message.Chat, "Введена команда END");
                     return;
                 }
-
-                await botClient.SendTextMessageAsync(message.Chat, $"Дата сообщения {message.Date}, " +
-                                                                   $"Пользователь {message.Chat.FirstName}, " +
-                                                                   $"Текст сообщения {message.Text}");*/
             }
-            var botUpdates = await botClient.GetUpdatesAsync();
-            var users = botUpdates.Select(u => u.Message.Chat).Distinct();
-
-            // Отправляем сообщение каждому пользователю
-            foreach (var user in users)
-            {
-                await botClient.SendTextMessageAsync(user.Id, "Бот говорит тебе - Дырявые носки");
-            }
-        }
-
-        static async Task SendMessageToAllUsers(string botToken, string messageText)
-        {
-            var botClient = new TelegramBotClient("5396048539:AAEugLYh52N30Khic5HilGXyQvFDXXvyn94");
-
+            
             // Получаем список всех пользователей бота
             var botUpdates = await botClient.GetUpdatesAsync();
-            var users = botUpdates.Select(u => u.Message.Chat).Distinct();
+            var users = botUpdates.Select(u => u.Message.Chat).Distinct(); // покопаться тут!!!!
 
             // Отправляем сообщение каждому пользователю
             foreach (var user in users)
             {
-                await botClient.SendTextMessageAsync(user.Id, "Дырявые носки");
+                await botClient.SendTextMessageAsync(user.Id, $"Дата сообщения: {message.Date}, " +
+                                                                   $"Пользователь: {message.Chat.FirstName}, " +
+                                                                   $"Смолвил: {message.Text}");
+                await botClient.SendTextMessageAsync(message.Chat, "Бот говорит Всем - Leerooooooy Jenkins!!!");
             }
         }
 
         public static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            // Некоторые действия
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
         }
 
