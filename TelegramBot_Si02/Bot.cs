@@ -6,9 +6,8 @@ namespace Bot
 {
     class Bot
     {
-        static ITelegramBotClient bot = new TelegramBotClient("5526483933:AAGPLXbHWd_AkqUOaVkRL9qmJ-zdwXVIobA");
-
-
+        static ITelegramBotClient bot = new TelegramBotClient("5396048539:AAEugLYh52N30Khic5HilGXyQvFDXXvyn94");
+        
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             var message = update.Message;
@@ -27,7 +26,9 @@ namespace Bot
                     return;
                 }
 
-                await botClient.SendTextMessageAsync(message.Chat, $"Дата сообщения {message.Date}");
+                await botClient.SendTextMessageAsync(message.Chat, $"Дата сообщения {message.Date}, " +
+                                                                   $"Пользователь {message.From}, " +
+                                                                   $"Текст сообщения {message.Text}");
             }
         }
 
