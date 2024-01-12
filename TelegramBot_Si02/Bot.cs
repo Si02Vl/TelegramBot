@@ -5,6 +5,7 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types.Enums;
+using System.IO;
 
 class Program
 {
@@ -25,15 +26,29 @@ class Program
     {
         if (update.Message is { } message && message.From is { } sender)
         {
-            if (message.Text == @"\Bot")
+            switch (message.Text)
             {
-                string text = "Привет, я бот! Команда Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
-                await botClient.SendTextMessageAsync(message.Chat.Id, text, cancellationToken: cancellationToken);
-            }
-            else if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
-            {
-                string text = $"Привет, я бот! {sender.FirstName} сказал: {message.Text}";
-                await botClient.SendTextMessageAsync(chat.Id, text, cancellationToken: cancellationToken);
+                case "/Bot":
+                    string responseText = "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
+                    await botClient.SendTextMessageAsync(message.Chat.Id, responseText, cancellationToken: cancellationToken);
+                    break;
+                
+                case "/Picture":
+                    string imagePath = $"C:\\Users\\Si02\\RiderProjects\\TelegramBot_Si02\\Picture.png";
+                    using (var photoStream = System.IO.File.OpenRead(imagePath))
+                    {
+                        var photo = new Telegram.Bot.Types.InputFileStream(photoStream,"Picture.png");
+                        await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
+                    }
+                    break;
+                
+                default:
+                    if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
+                    {
+                        string text = $"Привет, я бот! {sender.FirstName} сказал: {message.Text}";
+                        await botClient.SendTextMessageAsync(chat.Id, text, cancellationToken: cancellationToken);
+                    }
+                    break;
             }
         }
     }
