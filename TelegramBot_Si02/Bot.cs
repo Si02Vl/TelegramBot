@@ -5,7 +5,6 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types.Enums;
-using System.IO;
 
 class Program
 {
@@ -42,14 +41,14 @@ class Program
                     }
                     break;
                 
-                case "/Gif":
-                    string gifPath = $"";
-                    using (var photoStream = System.IO.File.OpenRead(gifPath))
-                    {
-                        var photo = new Telegram.Bot.Types.InputFileStream(photoStream,"Picture.png");
-                        await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
-                    }
-                    break;
+                // case "/Gif":
+                //     string gifPath = $"";
+                //     using (var photoStream = System.IO.File.OpenRead(gifPath))
+                //     {
+                //         var photo = new Telegram.Bot.Types.InputFileStream(photoStream,"Picture.png");
+                //         await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
+                //     }
+                //     break;
                 
                 default:
                     if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
