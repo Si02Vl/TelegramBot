@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
-using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types.Enums;
 
 class Program
@@ -19,16 +18,21 @@ class Program
         Console.WriteLine("Bot started. Press any key to exit.");
         Console.ReadKey();
 
-        //await botClient.StopPollAsync();
+        //await botClient.StopReceivingAsync();
     }
 
     static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Message is { } message && message.From is { } sender)
         {
-            if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
+            if (message.Text == @"\Bot")
             {
-                string text = $"Привет, я бот! Вы сказали: {message.Text}";
+                string text = "Привет, я бот! Команда Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
+                await botClient.SendTextMessageAsync(message.Chat.Id, text, cancellationToken: cancellationToken);
+            }
+            else if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
+            {
+                string text = $"Привет, я бот! {sender.FirstName} сказал: {message.Text}";
                 await botClient.SendTextMessageAsync(chat.Id, text, cancellationToken: cancellationToken);
             }
         }
