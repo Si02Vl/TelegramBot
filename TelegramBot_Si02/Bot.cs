@@ -32,10 +32,19 @@ class Program
                     string responseText = "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseText, cancellationToken: cancellationToken);
                     break;
-                
+
                 case "/Picture":
-                    string imagePath = $"C:\\Users\\Si02\\RiderProjects\\TelegramBot_Si02\\Picture.png";
+                    string imagePath = $"TelegramBot_Si02/Pictures/Picture.png";
                     using (var photoStream = System.IO.File.OpenRead(imagePath))
+                    {
+                        var photo = new Telegram.Bot.Types.InputFileStream(photoStream,"Picture.png");
+                        await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
+                    }
+                    break;
+                
+                case "/Gif":
+                    string gifPath = $"";
+                    using (var photoStream = System.IO.File.OpenRead(gifPath))
                     {
                         var photo = new Telegram.Bot.Types.InputFileStream(photoStream,"Picture.png");
                         await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
