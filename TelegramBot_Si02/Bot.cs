@@ -97,8 +97,9 @@ class Program
                                 return; // Прервать выполнение после отправки сообщения
                             }
                         }
+                    
                         // Отправить исходный текст
-                        string response = "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
+                        string response = "//вставить код с возвратом сообщения"; 
                         await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);
                     }
                     break;
