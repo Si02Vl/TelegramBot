@@ -48,6 +48,17 @@ class Program
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseTextGreeting, cancellationToken: cancellationToken);
                     break;
                 
+                case "/start":
+                    var replyKeyboard = new ReplyKeyboardMarkup(new[]
+                    {
+                        new[]
+                        {
+                            new KeyboardButton("Тестовая кнопка")
+                        }
+                    });
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
+                    break;
+                
                 case "Тестовая кнопка 1":
                     string responseButton = "Еще раз нажмешь - нажму красную кнопку!";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseButton, cancellationToken: cancellationToken);
@@ -56,17 +67,6 @@ class Program
                 case "/help":
                     string responseTextHelp = "Список команд: " +  "\r\n/Picture " + "\r\n/start " + "\r\n/sendphoto " + "\r\n/Bot ";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp, cancellationToken: cancellationToken);
-                    break;
-                
-                case "/start":
-                    var replyKeyboard = new ReplyKeyboardMarkup(new[]
-                    {
-                        new[]
-                        {
-                            new KeyboardButton("Тестовая кнопка 1")
-                        }
-                    });
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
                     break;
                 
                 case "/sendphoto":
@@ -81,7 +81,10 @@ class Program
                 default:
                     if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
                     {
-                        string matureText = message.Text;
+                        string response = "//вставить код с возвратом сообщения"; 
+                        await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);
+                            
+                        /*string matureText = message.Text;
                         // Список матерных слов
                         string[] badWords = { "1", "2", "3" };
 
@@ -100,7 +103,7 @@ class Program
                     
                         // Отправить исходный текст
                         string response = "//вставить код с возвратом сообщения"; 
-                        await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);
+                        await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);*/
                     }
                     break;
             }
