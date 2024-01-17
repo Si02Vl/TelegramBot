@@ -21,8 +21,6 @@ class Program
 
         Console.WriteLine("Bot started. Press any key to exit.");
         Console.ReadKey();
-
-        //await botClient.StopReceivingAsync();
     }
 
     static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -50,7 +48,7 @@ class Program
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseTextGreeting, cancellationToken: cancellationToken);
                     break;
                 
-                case "Тестовая кнопка":
+                case "Тестовая кнопка 1":
                     string responseButton = "Еще раз нажмешь - нажму красную кнопку!";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseButton, cancellationToken: cancellationToken);
                     break;
@@ -65,7 +63,7 @@ class Program
                     {
                         new[]
                         {
-                            new KeyboardButton("Тестовая кнопка")
+                            new KeyboardButton("Тестовая кнопка 1")
                         }
                     });
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
@@ -80,21 +78,30 @@ class Program
                     }
                     break;  
                 
-                case (message.Chat is {$"Хуй"} chat && chat.Type == ChatType.Group && sender.IsBot == false)
-                   // {
-                   //      string text = $"Это быдло ругнулось, так что отправлять в группу это не буду";
-                   //      await botClient.SendTextMessageAsync(chat.Id, text, cancellationToken: cancellationToken);
-                   //  }
-                   //  break;
-                
                 default:
                     if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
                     {
-                        string text = $"Привет, я бот! Этот кожанный только что сказал \"{message.Text}\". Может испепелим кожанного?";
-                        await botClient.SendTextMessageAsync(chat.Id, text, cancellationToken: cancellationToken);
+                        string matureText = message.Text;
+                        // Список матерных слов
+                        string[] badWords = { "1", "2", "3" };
+
+                        // Проверка наличия матерных слов в сообщении
+                        foreach (var word in badWords)
+                        {
+                            if (matureText.Contains(word))
+                            {
+                                // Заменить матерное слово на желаемый текст
+                                matureText = matureText.Replace(word, "Этот кожанный ругнулся!");
+                                // Отправить сообщение с обработанным текстом
+                                await botClient.SendTextMessageAsync(message.Chat.Id, matureText, cancellationToken: cancellationToken);
+                                return; // Прервать выполнение после отправки сообщения
+                            }
+                        }
+                        // Отправить исходный текст
+                        string response = "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
+                        await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);
                     }
                     break;
-                
             }
         }
     }
