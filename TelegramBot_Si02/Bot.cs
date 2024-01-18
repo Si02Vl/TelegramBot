@@ -89,16 +89,17 @@ class Program
                         // Проверка наличия матерных слов в сообщении
                         foreach (var word in badWords)
                         {
+                            
                             if (matureText.Contains(word))
                             {
                                 // Заменить матерное слово на желаемый текст
                                 matureText = matureText.Replace(word, "Этот кожанный ругнулся!");
-                                containsBadWord = true;
                             }
                             else;
                             {
-                                // Отправить сообщение с обработанным текстом
+                                // Отправить исходное сообщение
                                 await botClient.SendTextMessageAsync(message.Chat.Id, matureText, cancellationToken: cancellationToken);
+                                break;
                             }
                         }
                     }
