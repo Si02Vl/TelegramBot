@@ -53,13 +53,13 @@ class Program
                     {
                         new[]
                         {
-                            new KeyboardButton("Тестовая кнопка")
+                            new KeyboardButton("Стартуем!")
                         }
                     });
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
                     break;
                 
-                case "Тестовая кнопка 1":
+                case "Стартуем!":
                     string responseButton = "Еще раз нажмешь - нажму красную кнопку!";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseButton, cancellationToken: cancellationToken);
                     break;
@@ -79,14 +79,12 @@ class Program
                     break;  
                 
                 default:
-                    if (message.Chat is { } chat && chat.Type == ChatType.Group && sender.IsBot == false)
+                    if (sender.IsBot == false && message.Chat.Type == ChatType.Group)
                     {
-                        string response = "//вставить код с возвратом сообщения"; 
-                        await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);
-                            
-                        /*string matureText = message.Text;
+                        string matureText = message.Text;
                         // Список матерных слов
-                        string[] badWords = { "1", "2", "3" };
+                        string[] badWords = { "буй", "звезда", "Игорь" };
+                        bool containsBadWord = false;
 
                         // Проверка наличия матерных слов в сообщении
                         foreach (var word in badWords)
@@ -95,15 +93,14 @@ class Program
                             {
                                 // Заменить матерное слово на желаемый текст
                                 matureText = matureText.Replace(word, "Этот кожанный ругнулся!");
+                                containsBadWord = true;
+                            }
+                            else;
+                            {
                                 // Отправить сообщение с обработанным текстом
                                 await botClient.SendTextMessageAsync(message.Chat.Id, matureText, cancellationToken: cancellationToken);
-                                return; // Прервать выполнение после отправки сообщения
                             }
                         }
-                    
-                        // Отправить исходный текст
-                        string response = "//вставить код с возвратом сообщения"; 
-                        await botClient.SendTextMessageAsync(message.Chat.Id, response, cancellationToken: cancellationToken);*/
                     }
                     break;
             }
