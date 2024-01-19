@@ -127,6 +127,7 @@ namespace TelegramBot_Si02
             }
         }
 
+        //Удаление сообщений
         private static async Task MessgeDeleteMethod(ITelegramBotClient botClient, CancellationToken cancellationToken, Message message)
         {
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
