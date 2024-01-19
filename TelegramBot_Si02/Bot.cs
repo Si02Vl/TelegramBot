@@ -76,6 +76,7 @@ class Program
                     if (sender.IsBot == false && message.Text != null) 
                     {
                         string text = message.Text;
+                        string textLower = text.ToLower();
                         string replaсedBadWorld = text;
                         bool containsBadWord = false;
                         
@@ -87,7 +88,7 @@ class Program
                         foreach (var word in badWords)
                         {
                             // Поиск матерных слов
-                            if (text.ToLower().Contains(word)) //создать новую переменную для смены регистра???
+                            if (textLower.Contains(word)) //создать новую переменную для смены регистра???
                             {
                                 // Заменить матерное слово на желаемый текст
                                 replaсedBadWorld = text.Replace(word, " *тут был мат* ");
