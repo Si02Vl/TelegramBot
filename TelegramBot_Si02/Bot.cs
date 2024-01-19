@@ -83,7 +83,7 @@ class Program
                         bool containsBadWord;
                         
                         // Список матерных слов
-                        string[] badWords = { "буй", "звезда", "Игорь" };
+                        string[] badWords = { "Хуй", "Пизда", "Игорь" };
 
                         foreach (var word in badWords)
                         {
@@ -104,7 +104,7 @@ class Program
                         else
                         {
                             // Отправить исходное сообщение
-                            await botClient.SendTextMessageAsync(message.Chat.Id, replaсedBadWorld, cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, text, cancellationToken: cancellationToken);
                         }
                     }
                     break;
