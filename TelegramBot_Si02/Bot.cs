@@ -25,7 +25,7 @@ class Program
 
     static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        if (update.Message is { } message && message.From is { } sender && message.Text != null && message.Chat.Type == ChatType.Private)
+        if (update.Message is { } message && message.From is { } sender && message.Text != null | message.Chat.Type == ChatType.Private)
         {
             switch (message.Text)
             {
@@ -51,7 +51,9 @@ class Program
                     {
                         new[]
                         {
-                            new KeyboardButton("Стартуем!")
+                            new KeyboardButton("Стартуем!"),
+                            new KeyboardButton("Джип в Москве"),
+                            new KeyboardButton("Не стартуем!")
                         }
                     });
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
