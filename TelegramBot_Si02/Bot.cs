@@ -29,8 +29,22 @@ class Program
         {
             switch (message.Text)
             {
+                //Запускаем бота, добавляем новые кнопки
+                case "/start":
+                    var replyKeyboard = new ReplyKeyboardMarkup(new[]
+                    {
+                        new[]
+                        {
+                            new KeyboardButton("Стартуем!"),
+                            new KeyboardButton("Джип в Москве"),
+                            new KeyboardButton("Вдох-выдох, упал-отжался!")
+                        }
+                    });
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
+                    break;
+                
                 case "/bot":
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..", cancellationToken: cancellationToken);
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет, я бот! Команда /bot была распознана. Приступаю к уничтожению человечества! 3..2..1..", cancellationToken: cancellationToken);
                     break;
 
                 case "/picture":
@@ -44,19 +58,6 @@ class Program
                 
                 case "Привет, бот!":
                     await botClient.SendTextMessageAsync(message.Chat.Id, "И тебе привет, кожанный мешок!", cancellationToken: cancellationToken);
-                    break;
-                
-                case "/start":
-                    var replyKeyboard = new ReplyKeyboardMarkup(new[]
-                    {
-                        new[]
-                        {
-                            new KeyboardButton("Стартуем!"),
-                            new KeyboardButton("Джип в Москве"),
-                            new KeyboardButton("Не стартуем!")
-                        }
-                    });
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
                     break;
                 
                 case "Стартуем!":
@@ -78,7 +79,7 @@ class Program
                     break;  
                 
                 default:
-                    if (sender.IsBot == false && message.Text != null) //&& message.Chat.Type == ChatType.Group && message.Chat.Type == ChatType.Private)
+                    if (sender.IsBot == false && message.Text != null) 
                     {
                         string text = message.Text;
                         string replaсedBadWorld = text;
@@ -103,12 +104,12 @@ class Program
                         if (containsBadWord)
                         {
                             // Отправить сообщение с замененными матерными словами
-                            await botClient.SendTextMessageAsync(message.Chat.Id, replaсedBadWorld, cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил: {replaсedBadWorld}", cancellationToken: cancellationToken);
                         }
                         else
                         {
                             // Отправить исходное сообщение
-                            await botClient.SendTextMessageAsync(message.Chat.Id, text, cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил {text}", cancellationToken: cancellationToken);
                         }
                     }
                     break;
