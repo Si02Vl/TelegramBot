@@ -86,7 +86,8 @@ class Program
 
                         foreach (var word in badWords)
                         {
-                            if (text.Contains(word))
+                            // Поиск матерных слов
+                            if (text.ToLower().Contains(word)) //создать новую переменную для смены регистра???
                             {
                                 // Заменить матерное слово на желаемый текст
                                 replaсedBadWorld = text.Replace(word, " *тут был мат* ");
@@ -98,13 +99,13 @@ class Program
                         if (containsBadWord)
                         {
                             // Отправить сообщение с замененными матерными словами
-                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.Username} смолвил:" + $"\r\n{replaсedBadWorld}", cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{replaсedBadWorld}", cancellationToken: cancellationToken);
                             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId, cancellationToken: cancellationToken);
                         }
                         else
                         {
                             // Отправить исходное сообщение
-                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.Username} смолвил:" + $"\r\n{text}", cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}", cancellationToken: cancellationToken);
                             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId, cancellationToken: cancellationToken);
                         }
                     }
