@@ -1,16 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Telegram.Bot;
-using Telegram.Bot.Args;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
+namespace TelegramBot_Si02;
 
-
-class Program
+class Bot
 {
     static async Task Main()
     {
@@ -88,7 +84,7 @@ class Program
                         foreach (var word in badWords)
                         {
                             // Поиск матерных слов
-                            if (textLower.Contains(word)) //создать новую переменную для смены регистра???
+                            if (textLower.Contains(word))
                             {
                                 // Заменить матерное слово на желаемый текст
                                 replaсedBadWorld = textLower.Replace(word, " *тут был мат* ");
