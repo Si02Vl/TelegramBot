@@ -91,7 +91,7 @@ class Program
                             if (textLower.Contains(word)) //создать новую переменную для смены регистра???
                             {
                                 // Заменить матерное слово на желаемый текст
-                                replaсedBadWorld = text.Replace(word, " *тут был мат* ");
+                                replaсedBadWorld = textLower.Replace(word, " *тут был мат* ");
                                 containsBadWord = true;
                                 break;
                             }
