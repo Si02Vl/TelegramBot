@@ -8,6 +8,7 @@ namespace TelegramBot_Si02
 {
     class Bot
     {
+        //Обработка сообщений
         public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message is { } message && message.From is { } sender &&
@@ -23,7 +24,8 @@ namespace TelegramBot_Si02
                             {
                                 new KeyboardButton("Стартуем!"),
                                 new KeyboardButton("Джип в Москве"),
-                                new KeyboardButton("Вдох-выдох, упал-отжался!")
+                                new KeyboardButton("Вдох-выдох, упал-отжался!"),
+                                new KeyboardButton("Список команд")
                             }
                         });
                         await botClient.SendTextMessageAsync(message.Chat.Id,
@@ -33,13 +35,22 @@ namespace TelegramBot_Si02
 
 
                     //Кнопки                
-                    case "Стартуем!":
-                        await botClient.SendTextMessageAsync(message.Chat.Id, "Еще раз нажмешь - нажму красную кнопку!",
-                            cancellationToken: cancellationToken);
-                        break;
+                    // case "Стартуем!":
+                    //     await botClient.SendTextMessageAsync(message.Chat.Id, 
+                    //         "Еще раз нажмешь - нажму красную кнопку!",
+                    //         cancellationToken: cancellationToken);
+                    //     break;
 
                     case "Джип в Москве":
-                        await botClient.SendTextMessageAsync(message.Chat.Id, "Джип в Москве",
+                        await botClient.SendTextMessageAsync(message.Chat.Id, 
+                            "Джип в Москве",
+                            cancellationToken: cancellationToken);
+                        break;
+                    
+                    case "Список команд":
+                        string responseTextHelp = "Список команд: " + "\r\n/picture " + "\r\n/start " +
+                                                  "\r\n/sendphoto " + "\r\n/bot ";
+                        await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp,
                             cancellationToken: cancellationToken);
                         break;
 
@@ -50,8 +61,8 @@ namespace TelegramBot_Si02
                             cancellationToken: cancellationToken);
                         break;
 
-                    case "/picture":
-                        string imagePath = $"Pictures/Picture.png";
+                    case "Стартуем!":
+                        string imagePath = $"Pictures/PictureStart.png";
                         using (var photoStream = System.IO.File.OpenRead(imagePath))
                         {
                             var photo = new Telegram.Bot.Types.InputFileStream(photoStream, "Picture.png");
@@ -61,12 +72,6 @@ namespace TelegramBot_Si02
 
                         break;
 
-                    case "/help":
-                        string responseTextHelp = "Список команд: " + "\r\n/picture " + "\r\n/start " +
-                                                  "\r\n/sendphoto " + "\r\n/bot ";
-                        await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp,
-                            cancellationToken: cancellationToken);
-                        break;
 
                     default:
                         if (sender.IsBot == false && message.Text != null)
@@ -116,6 +121,7 @@ namespace TelegramBot_Si02
                 }
             }
         }
+        //Обработка ошибок
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             Console.WriteLine(exception.Message);
