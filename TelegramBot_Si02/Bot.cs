@@ -80,10 +80,12 @@ class Program
                     {
                         string text = message.Text;
                         string replaсedBadWorld = text;
-                        bool containsBadWord;
+                        bool containsBadWord = false;
                         
                         // Список матерных слов
-                        string[] badWords = { "Хуй", "Пизда", "Игорь" };
+                        string[] badWords;
+                        string filePath = "C:\\Users\\user\\RiderProjects\\TelegramBot_Si02\\words.txt";
+                        badWords = File.ReadAllLines(filePath);
 
                         foreach (var word in badWords)
                         {
@@ -96,7 +98,7 @@ class Program
                             }
                         }
 
-                        if (containsBadWord = true)
+                        if (containsBadWord)
                         {
                             // Отправить сообщение с замененными матерными словами
                             await botClient.SendTextMessageAsync(message.Chat.Id, replaсedBadWorld, cancellationToken: cancellationToken);
