@@ -43,13 +43,12 @@ namespace TelegramBot_Si02
                             await botClient.SendPhotoAsync(message.Chat.Id, photo,
                                 cancellationToken: cancellationToken);
                         }
-                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
-                            cancellationToken: cancellationToken);
+                        await MessgeDeleteMethod(botClient, cancellationToken, message);
                         break;
                     
                     case "Джип в Москве":
                         await botClient.SendTextMessageAsync(message.Chat.Id, 
-                            "Джип в Москве",
+                            "Джип в Москве пока не прогрет",
                             cancellationToken: cancellationToken);
                         break;
                     
@@ -57,16 +56,14 @@ namespace TelegramBot_Si02
                         await botClient.SendTextMessageAsync(message.Chat.Id,
                             $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{message.Text}",
                             cancellationToken: cancellationToken);
-                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
-                            cancellationToken: cancellationToken);
+                        await MessgeDeleteMethod(botClient, cancellationToken, message);
                         break;
 
                     case "Список команд":
                         string responseTextHelp = "Список команд: " + "\r\n/start ";
                         await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp,
                             cancellationToken: cancellationToken);
-                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
-                            cancellationToken: cancellationToken);
+                        await MessgeDeleteMethod(botClient, cancellationToken, message);
                         break;
                     
                     case "Удаляюсь, не хочу стартовать!":
@@ -74,6 +71,14 @@ namespace TelegramBot_Si02
                             "Выхода нет!",
                             cancellationToken: cancellationToken);
                         break;
+                    
+                    // case "memberDelete":
+                    //     if (message.Text == "Удаляюсь, не хочу стартовать!")
+                    //     {
+                    //         // Удаляем пользователя из группы
+                    //         await botClient.BanChatMemberAsync(message.MessageId, message.From.Id, cancellationToken: cancellationToken);
+                    //     }
+                    //     break;
 
                     default:
                         if (sender.IsBot == false && message.Text != null)
@@ -123,6 +128,13 @@ namespace TelegramBot_Si02
                 }
             }
         }
+
+        private static async Task MessgeDeleteMethod(ITelegramBotClient botClient, CancellationToken cancellationToken, Message message)
+        {
+            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
+                cancellationToken: cancellationToken);
+        }
+
         //Обработка ошибок
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
