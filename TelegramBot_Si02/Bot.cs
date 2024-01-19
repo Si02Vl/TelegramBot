@@ -111,8 +111,7 @@ namespace TelegramBot_Si02
                                 await botClient.SendTextMessageAsync(message.Chat.Id,
                                     $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{replaсedBadWorld}",
                                     cancellationToken: cancellationToken);
-                                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
-                                    cancellationToken: cancellationToken);
+                                await MessgeDeleteMethod(botClient, cancellationToken, message);
                             }
                             else
                             {
@@ -120,8 +119,7 @@ namespace TelegramBot_Si02
                                 await botClient.SendTextMessageAsync(message.Chat.Id,
                                     $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}",
                                     cancellationToken: cancellationToken);
-                                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
-                                    cancellationToken: cancellationToken);
+                                await MessgeDeleteMethod(botClient, cancellationToken, message);
                             }
                         }
                         break;
