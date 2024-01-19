@@ -7,7 +7,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using File = System.IO.File;
+
 
 
 class Program
@@ -82,14 +82,14 @@ class Program
                         // Список матерных слов
                         string[] badWords;
                         string filePath = "C:\\Users\\user\\RiderProjects\\TelegramBot_Si02\\words.txt";
-                        badWords = File.ReadAllLines(filePath);
+                        badWords = System.IO.File.ReadAllLines(filePath);
 
                         foreach (var word in badWords)
                         {
                             if (text.Contains(word))
                             {
                                 // Заменить матерное слово на желаемый текст
-                                replaсedBadWorld = text.Replace(word, "*тут был мат*");
+                                replaсedBadWorld = text.Replace(word, " *тут был мат* ");
                                 containsBadWord = true;
                                 break;
                             }
@@ -98,12 +98,14 @@ class Program
                         if (containsBadWord)
                         {
                             // Отправить сообщение с замененными матерными словами
-                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил: {replaсedBadWorld}", cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{replaсedBadWorld}", cancellationToken: cancellationToken);
+                            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId, cancellationToken: cancellationToken);
                         }
                         else
                         {
                             // Отправить исходное сообщение
-                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил {text}", cancellationToken: cancellationToken);
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}", cancellationToken: cancellationToken);
+                            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId, cancellationToken: cancellationToken);
                         }
                     }
                     break;
