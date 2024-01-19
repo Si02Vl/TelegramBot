@@ -40,11 +40,22 @@ class Program
                             new KeyboardButton("Вдох-выдох, упал-отжался!")
                         }
                     });
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет! Хозяин что-то пытается, работаю на морально-волевых, а вы подопытные)", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Это бот Наталья-морская пехота! \r\nЯ сейчас сяду за руль, а ты вылетишь отсюда!!!", replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
                     break;
                 
+                
+                //Кнопки                
+                case "Стартуем!":
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Еще раз нажмешь - нажму красную кнопку!", cancellationToken: cancellationToken);
+                    break;
+                
+                case "Джип в Москве":
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Джип в Москве", cancellationToken: cancellationToken);
+                    break;
+                
+                //Команды
                 case "/bot":
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет, я бот! Команда /bot была распознана. Приступаю к уничтожению человечества! 3..2..1..", cancellationToken: cancellationToken);
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Команда /bot была распознана. Приступаю к уничтожению человечества! 3..2..1..", cancellationToken: cancellationToken);
                     break;
 
                 case "/picture":
@@ -55,29 +66,12 @@ class Program
                         await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
                     }
                     break;
-                
-                case "Привет, бот!":
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "И тебе привет, кожанный мешок!", cancellationToken: cancellationToken);
-                    break;
-                
-                case "Стартуем!":
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Еще раз нажмешь - нажму красную кнопку!", cancellationToken: cancellationToken);
-                    break;
-                
+                    
                 case "/help":
                     string responseTextHelp = "Список команд: " +  "\r\n/picture " + "\r\n/start " + "\r\n/sendphoto " + "\r\n/bot ";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp, cancellationToken: cancellationToken);
                     break;
-                
-                case "/sendphoto":
-                    string imagePathForButton = "Pictures/PictureForButton.png";
-                    using (var photoStream = System.IO.File.OpenRead(imagePathForButton))
-                    {
-                        var photo = new Telegram.Bot.Types.InputFileStream(photoStream,"PictureForButton.png");
-                        await botClient.SendPhotoAsync(message.Chat.Id, photo, cancellationToken: cancellationToken);
-                    }
-                    break;  
-                
+
                 default:
                     if (sender.IsBot == false && message.Text != null) 
                     {
