@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using System.Net.Mime;
+using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -25,7 +26,8 @@ namespace TelegramBot_Si02
                                 new KeyboardButton("Стартуем!"),
                                 new KeyboardButton("Джип в Москве"),
                                 new KeyboardButton("Вдох-выдох, упал-отжался!"),
-                                new KeyboardButton("Список команд")
+                                new KeyboardButton("Список команд"),
+                                new KeyboardButton("Удаляюсь, не хочу стартовать!")
                             }
                         });
                         await botClient.SendTextMessageAsync(message.Chat.Id,
@@ -33,34 +35,7 @@ namespace TelegramBot_Si02
                             replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
                         break;
 
-
-                    //Кнопки                
-                    // case "Стартуем!":
-                    //     await botClient.SendTextMessageAsync(message.Chat.Id, 
-                    //         "Еще раз нажмешь - нажму красную кнопку!",
-                    //         cancellationToken: cancellationToken);
-                    //     break;
-
-                    case "Джип в Москве":
-                        await botClient.SendTextMessageAsync(message.Chat.Id, 
-                            "Джип в Москве",
-                            cancellationToken: cancellationToken);
-                        break;
-                    
-                    case "Список команд":
-                        string responseTextHelp = "Список команд: " + "\r\n/picture " + "\r\n/start " +
-                                                  "\r\n/sendphoto " + "\r\n/bot ";
-                        await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp,
-                            cancellationToken: cancellationToken);
-                        break;
-
-                    //Команды
-                    case "/bot":
-                        await botClient.SendTextMessageAsync(message.Chat.Id,
-                            "Команда /bot была распознана. Приступаю к уничтожению человечества! 3..2..1..",
-                            cancellationToken: cancellationToken);
-                        break;
-
+                    //Кнопки
                     case "Стартуем!":
                         string imagePath = $"Pictures/PictureStart.png";
                         using (var photoStream = System.IO.File.OpenRead(imagePath))
@@ -69,9 +44,37 @@ namespace TelegramBot_Si02
                             await botClient.SendPhotoAsync(message.Chat.Id, photo,
                                 cancellationToken: cancellationToken);
                         }
-
+                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
+                            cancellationToken: cancellationToken);
+                        break;
+                    
+                    case "Джип в Москве":
+                        await botClient.SendTextMessageAsync(message.Chat.Id, 
+                            "Джип в Москве",
+                            cancellationToken: cancellationToken);
+                        break;
+                    
+                    case "Вдох-выдох, упал-отжался!":
+                        await botClient.SendTextMessageAsync(message.Chat.Id,
+                            $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{message.Text}",
+                            cancellationToken: cancellationToken);
+                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
+                            cancellationToken: cancellationToken);
                         break;
 
+                    case "Список команд":
+                        string responseTextHelp = "Список команд: " + "\r\n/start ";
+                        await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp,
+                            cancellationToken: cancellationToken);
+                        await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
+                            cancellationToken: cancellationToken);
+                        break;
+                    
+                    case "Удаляюсь, не хочу стартовать!":
+                        await botClient.SendTextMessageAsync(message.Chat.Id, 
+                            "Выхода нет!",
+                            cancellationToken: cancellationToken);
+                        break;
 
                     default:
                         if (sender.IsBot == false && message.Text != null)
