@@ -25,16 +25,15 @@ class Program
 
     static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        if (update.Message is { } message && message.From is { } sender)
+        if (update.Message is { } message && message.From is { } sender && message.Text != null && message.Chat.Type == ChatType.Private)
         {
             switch (message.Text)
             {
-                case "/Bot":
-                    string responseText = "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..";
-                    await botClient.SendTextMessageAsync(message.Chat.Id, responseText, cancellationToken: cancellationToken);
+                case "/bot":
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Привет, я бот! Команда /Bot была распознана. Приступаю к уничтожению человечества! 3..2..1..", cancellationToken: cancellationToken);
                     break;
 
-                case "/Picture":
+                case "/picture":
                     string imagePath = $"Pictures/Picture.png";
                     using (var photoStream = System.IO.File.OpenRead(imagePath))
                     {
@@ -44,8 +43,7 @@ class Program
                     break;
                 
                 case "Привет, бот!":
-                    string responseTextGreeting = "И тебе привет, кожанный мешок!";
-                    await botClient.SendTextMessageAsync(message.Chat.Id, responseTextGreeting, cancellationToken: cancellationToken);
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "И тебе привет, кожанный мешок!", cancellationToken: cancellationToken);
                     break;
                 
                 case "/start":
@@ -60,12 +58,11 @@ class Program
                     break;
                 
                 case "Стартуем!":
-                    string responseButton = "Еще раз нажмешь - нажму красную кнопку!";
-                    await botClient.SendTextMessageAsync(message.Chat.Id, responseButton, cancellationToken: cancellationToken);
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Еще раз нажмешь - нажму красную кнопку!", cancellationToken: cancellationToken);
                     break;
                 
                 case "/help":
-                    string responseTextHelp = "Список команд: " +  "\r\n/Picture " + "\r\n/start " + "\r\n/sendphoto " + "\r\n/Bot ";
+                    string responseTextHelp = "Список команд: " +  "\r\n/picture " + "\r\n/start " + "\r\n/sendphoto " + "\r\n/bot ";
                     await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp, cancellationToken: cancellationToken);
                     break;
                 
@@ -79,28 +76,35 @@ class Program
                     break;  
                 
                 default:
-                    if (sender.IsBot == false && message.Chat.Type == ChatType.Group)
+                    if (sender.IsBot == false && message.Text != null) //&& message.Chat.Type == ChatType.Group && message.Chat.Type == ChatType.Private)
                     {
-                        string matureText = message.Text;
+                        string text = message.Text;
+                        string replaсedBadWorld = text;
+                        bool containsBadWord;
+                        
                         // Список матерных слов
                         string[] badWords = { "буй", "звезда", "Игорь" };
-                        bool containsBadWord = false;
 
-                        // Проверка наличия матерных слов в сообщении
                         foreach (var word in badWords)
                         {
-                            
-                            if (matureText.Contains(word))
+                            if (text.Contains(word))
                             {
                                 // Заменить матерное слово на желаемый текст
-                                matureText = matureText.Replace(word, "Этот кожанный ругнулся!");
-                            }
-                            else;
-                            {
-                                // Отправить исходное сообщение
-                                await botClient.SendTextMessageAsync(message.Chat.Id, matureText, cancellationToken: cancellationToken);
+                                replaсedBadWorld = text.Replace(word, "*тут был мат*");
+                                containsBadWord = true;
                                 break;
                             }
+                        }
+
+                        if (containsBadWord = true)
+                        {
+                            // Отправить сообщение с замененными матерными словами
+                            await botClient.SendTextMessageAsync(message.Chat.Id, replaсedBadWorld, cancellationToken: cancellationToken);
+                        }
+                        else
+                        {
+                            // Отправить исходное сообщение
+                            await botClient.SendTextMessageAsync(message.Chat.Id, replaсedBadWorld, cancellationToken: cancellationToken);
                         }
                     }
                     break;
