@@ -119,33 +119,37 @@ namespace TelegramBot_Si02
                             }
                             else
                             {
-                                //Инлайн клавиатура к сообщениям (выделить в отдельный метод???)
-                                InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
-                                {
-                                    new [] // Первая строка инлайн-клавиатуры
-                                    {
-                                        InlineKeyboardButton.WithCallbackData("Кнопка 1", "button1"),
-                                        InlineKeyboardButton.WithCallbackData("Кнопка 2", "button2"),
-                                    },
-                                    new [] // Вторая строка инлайн-клавиатуры
-                                    {
-                                        InlineKeyboardButton.WithCallbackData("Кнопка 3", "button3"),
-                                        InlineKeyboardButton.WithCallbackData("Кнопка 4", "button4"),
-                                    }
-                                });
-                                
-                                //await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: inlineKeyboard);
+                                var inlineKeyboard = InlineKeyboardMethod(botClient, cancellationToken, message);
+
                                 // Отправить исходное сообщение
                                 await botClient.SendTextMessageAsync(message.Chat.Id,
                                     $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}", replyMarkup: inlineKeyboard,
                                     cancellationToken: cancellationToken);
                                 await MessgeDeleteMethod(botClient, cancellationToken, message);
-                                
                             }
                         }
                         break;
                 }
             }
+        }
+
+        //Инлайн клавиатура к сообщениям
+        private static InlineKeyboardMarkup InlineKeyboardMethod(ITelegramBotClient botClient, CancellationToken cancellationToken, Message message)
+        {
+            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new[] // Первая строка инлайн-клавиатуры
+                {
+                    InlineKeyboardButton.WithCallbackData("Кнопка 1", "button1"),
+                    InlineKeyboardButton.WithCallbackData("Кнопка 2", "button2"),
+                },
+                new[] // Вторая строка инлайн-клавиатуры
+                {
+                    InlineKeyboardButton.WithCallbackData("Кнопка 3", "button3"),
+                    InlineKeyboardButton.WithCallbackData("Кнопка 4", "button4"),
+                }
+            });
+            return inlineKeyboard;
         }
 
         //Удаление сообщений
