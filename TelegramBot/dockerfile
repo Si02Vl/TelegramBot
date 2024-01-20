@@ -2,8 +2,7 @@
 WORKDIR /app
 
 # Копирование файлов проекта
-COPY C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot /app
-RUN dotnet restore
+COPY . /app
 
 # Установка рабочей директории внутри контейнера
 WORKDIR /app
