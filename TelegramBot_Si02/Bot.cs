@@ -16,7 +16,7 @@ namespace TelegramBot_Si02
             {
                 switch (message.Text)
                 {
-                    //Запускаем бота, добавляем новые кнопки
+                    //Запускаем бота, добавляем новые кнопки в меню
                     case "/start":
                         var replyKeyboard = new ReplyKeyboardMarkup(new[]
                         {
@@ -119,11 +119,28 @@ namespace TelegramBot_Si02
                             }
                             else
                             {
+                                //Инлайн клавиатура к сообщениям (выделить в отдельный метод???)
+                                InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
+                                {
+                                    new [] // Первая строка инлайн-клавиатуры
+                                    {
+                                        InlineKeyboardButton.WithCallbackData("Кнопка 1", "button1"),
+                                        InlineKeyboardButton.WithCallbackData("Кнопка 2", "button2"),
+                                    },
+                                    new [] // Вторая строка инлайн-клавиатуры
+                                    {
+                                        InlineKeyboardButton.WithCallbackData("Кнопка 3", "button3"),
+                                        InlineKeyboardButton.WithCallbackData("Кнопка 4", "button4"),
+                                    }
+                                });
+                                
+                                //await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: inlineKeyboard);
                                 // Отправить исходное сообщение
                                 await botClient.SendTextMessageAsync(message.Chat.Id,
-                                    $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}",
+                                    $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}", replyMarkup: inlineKeyboard,
                                     cancellationToken: cancellationToken);
                                 await MessgeDeleteMethod(botClient, cancellationToken, message);
+                                
                             }
                         }
                         break;
