@@ -150,7 +150,7 @@ namespace TelegramBot_Si02
     {
         static async Task Main()
         {
-            var botToken = "";
+            var botToken = "6958296449:AAFdDLvwL2sxEH4GU-Vo0wj-JsQOb6BDVQw";
             var botClient = new TelegramBotClient(botToken);
 
             var bot = new Bot();
