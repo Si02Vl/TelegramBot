@@ -91,7 +91,8 @@ namespace TelegramBot_Si02
                             string textLower = text.ToLower();
                             string replaсedBadWorld = text;
                             bool containsBadWord = false;
-
+                            var inlineKeyboard = InlineKeyboardMethod(botClient, cancellationToken, message);
+                            
                             // Список матерных слов
                             string[] badWords;
                             string filePath = "C:\\Users\\Si02\\RiderProjects\\TelegramBot_Si02\\words.txt";
@@ -119,8 +120,6 @@ namespace TelegramBot_Si02
                             }
                             else
                             {
-                                var inlineKeyboard = InlineKeyboardMethod(botClient, cancellationToken, message);
-
                                 // Отправить исходное сообщение
                                 await botClient.SendTextMessageAsync(message.Chat.Id,
                                     $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}", replyMarkup: inlineKeyboard,
