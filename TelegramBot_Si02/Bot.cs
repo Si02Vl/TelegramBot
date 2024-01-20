@@ -25,8 +25,12 @@ namespace TelegramBot_Si02
                                 new KeyboardButton("Стартуем!"),
                                 new KeyboardButton("Джип в Москве"),
                                 new KeyboardButton("Вдох-выдох, упал-отжался!"),
+                            },
+                            new []
+                            {
                                 new KeyboardButton("Список команд"),
-                                new KeyboardButton("Удаляюсь, не хочу стартовать!")
+                                new KeyboardButton("Удаляюсь, не хочу стартовать!"),
+                                new KeyboardButton("Просто кнопка")
                             }
                         });
                         await botClient.SendTextMessageAsync(message.Chat.Id,
