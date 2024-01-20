@@ -95,7 +95,7 @@ namespace TelegramBot_Si02
                             
                             // Список матерных слов
                             string[] badWords;
-                            string filePath = "C:\\Users\\Si02\\RiderProjects\\TelegramBot_Si02\\words.txt";
+                            string filePath = "words.txt";
                             badWords = System.IO.File.ReadAllLines(filePath);
 
                             foreach (var word in badWords)
