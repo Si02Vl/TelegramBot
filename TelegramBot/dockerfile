@@ -1,11 +1,14 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
-WORKDIR /app
-
-# Копирование файлов проекта
-COPY . /app
 
 # Установка рабочей директории внутри контейнера
-WORKDIR /app
+WORKDIR /app/TelegramBot
+
+# Копирование файлов проекта
+COPY . .
+
+# Копирование файлов изображений
+COPY Pictures /app/TelegramBot/Pictures
+COPY Files /app/TelegramBot/Files
 
 # Восстановление зависимостей
 RUN dotnet restore

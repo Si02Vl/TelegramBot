@@ -1,0 +1,18 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  telegrambot:
+    build:
+      context: "C:\\Users\\Si02\\RiderProjects\\TelegramBot_Si02"
+      dockerfile: "TelegramBot/dockerfile"
+      target: "build-env"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net6.0/TelegramBot.dll"
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+    image: "telegrambot:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Si02\\RiderProjects\\TelegramBot_Si02\\TelegramBot:/app:rw"
+    working_dir: "/app"
