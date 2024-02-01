@@ -40,7 +40,8 @@ namespace TelegramBot
 
                     //Кнопки
                     case "Стартуем!":
-                        string imagePath = Path.Combine("Pictures", "PictureStart.png");
+                        string imagePath = "/app/out/Pictures/PictureStart.png";
+                        //string imagePath = Path.Combine("Pictures", "PictureStart.png");
                         using (var photoStream = System.IO.File.OpenRead(imagePath))
                         {
                             var photo = new Telegram.Bot.Types.InputFileStream(photoStream, imagePath);
@@ -95,7 +96,8 @@ namespace TelegramBot
                             
                             // Список матерных слов
                             string[] badWords;
-                            string filePath = Path.Combine("Files", "words.txt");
+                            string filePath = "/app/out/Files/words.txt";
+                            //string filePath = Path.Combine("Files", "words.txt");
                             badWords = System.IO.File.ReadAllLines(filePath);
 
                             foreach (var word in badWords)

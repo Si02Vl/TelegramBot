@@ -7,8 +7,8 @@ WORKDIR /app
 COPY . /app
 
 # Копирование файлов изображений
-COPY Pictures /app
-COPY Files /app
+COPY Pictures /app/Pictures
+COPY Files /app/Files
 
 # Восстановление зависимостей
 RUN dotnet restore
