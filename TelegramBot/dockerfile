@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 
 # Установка рабочей директории внутри контейнера
 WORKDIR /app/TelegramBot
@@ -17,6 +17,6 @@ RUN dotnet restore
 RUN dotnet build -c Release -o out
 
 # Второй этап сборки
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 ENTRYPOINT ["dotnet", "TelegramBot.dll"]
