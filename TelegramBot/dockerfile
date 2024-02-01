@@ -1,5 +1,5 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
-
+MAINTAINER Pavel Si02 
 # Установка рабочей директории внутри контейнера
 WORKDIR /app/TelegramBot
 

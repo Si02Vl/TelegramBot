@@ -165,8 +165,8 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
     }
-    
-    class Program
+
+    public class Program
     {
         static async Task Main()
         {

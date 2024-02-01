@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>TelegramBot</AssemblyName>
     <RootNamespace>TelegramBot</RootNamespace>
-    <LangVersion>11</LangVersion>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
