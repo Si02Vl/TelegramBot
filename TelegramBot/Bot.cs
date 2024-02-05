@@ -1,5 +1,8 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -11,20 +14,14 @@ namespace TelegramBot
 {
     public class Bot
     {
-        //Обработка сообщений
-        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
-            CancellationToken cancellationToken)
-        {
-            //Создаем список покупок
-            var shoppingList = new List<ShoppingList>
-            {
-                new ShoppingList { product = update.Message.Text, isBought = false }
-            };
+        private List<ShoppingList> shoppingList = new List<ShoppingList>(); // Список покупок как поле класса
 
-            // Запись сообщения в файл
-            string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt"; // путь к файлу для записи
+        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        {
+            shoppingList.Add(new ShoppingList { product = update.Message.Text, isBought = false }); // Добавляем новый элемент в список покупок
+
+            string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
             string fileContent = File.ReadAllText(filePath);
-            //string newItem = update.Message.Text;
 
             foreach (var item in shoppingList)
             {
@@ -34,7 +31,7 @@ namespace TelegramBot
                     fileContent += newItem + "\n";
                 }
             }
-            
+
             try
             {
                 File.WriteAllText(filePath, fileContent);
@@ -45,19 +42,48 @@ namespace TelegramBot
             }
         }
 
-        //Обработка ошибок
-        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
-            CancellationToken cancellationToken)
+        public Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
         {
-            Console.WriteLine(exception.Message);
+            string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
+            File.WriteAllText(filePath, "");
             return Task.CompletedTask;
         }
 
-        public class ShoppingList
+        public async Task ControlShoppingListKeyboardAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
         {
-            public int id {get; set;}
-            public string product {get; set;}
-            public bool isBought {get; set;}
+            var chatId = message.Chat.Id;
+
+            var keyboard = new ReplyKeyboardMarkup(new[]
+            {
+                new[]
+                {
+                    new KeyboardButton("Очистить список"),
+                    new KeyboardButton("Показать список")
+                }
+            });
+
+            await botClient.SendTextMessageAsync(chatId, "Выберите действие:", replyMarkup: keyboard, cancellationToken: cancellationToken);
+        }
+
+        public async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery, CancellationToken cancellationToken)
+        {
+            var chatId = callbackQuery.Message.Chat.Id;
+
+            if (callbackQuery.Data == "Очистить список")
+            {
+                await ClearShoppingListAsync(botClient, callbackQuery.Message, cancellationToken);
+            }
+            else if (callbackQuery.Data == "Показать список")
+            {
+                // Реализуйте логику для отправки списка в чат
+                // Например, создайте метод SendShoppingListAsync и вызовите его здесь
+            }
+        }
+
+        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        {
+            Console.WriteLine(exception.Message);
+            return Task.CompletedTask;
         }
 
         public class Program
@@ -70,7 +96,7 @@ namespace TelegramBot
                 var bot = new Bot();
                 botClient.StartReceiving(new DefaultUpdateHandler(bot.MessageUpdateAsync, bot.HandleErrorAsync));
 
-                Console.WriteLine("Bot started. Press any key to exit.");
+                Console.WriteLine("Бот запущен. Нажмите любую клавишу для выхода.");
                 await Task.Delay(-1);
                 Console.ReadKey();
             }
