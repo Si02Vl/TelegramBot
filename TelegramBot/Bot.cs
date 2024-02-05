@@ -11,17 +11,19 @@ namespace TelegramBot
     public class Bot
     {
         //Обработка сообщений
-        public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
+            //получаем сообщение
             if (update.Message is { } message && message.From is { } sender &&
                 message.Text != null | message.Chat.Type == ChatType.Private)
             {
+                //Создаем список покупок
                 var shoppingList = new List<ShoppingList>
                 {
                     new ShoppingList { product = message.Text, isBought = false }
                 };
-
+                
                 switch (message.Text)
                 {
                     //Запускаем бота, добавляем новые кнопки в меню
@@ -49,15 +51,20 @@ namespace TelegramBot
                             string text = message.Text;
                             var inlineKeyboard = InlineKeyboardMethod(botClient, cancellationToken, message);
                             {
+                                string messageToChat = "Список покупок:\n";
+                                foreach (var item in shoppingList)
+                                {
+                                    messageToChat += $"{item.product} - {(item.isBought ? "куплено" : "не куплено")}\n";
+                                }
+                                await botClient.SendTextMessageAsync(message.Chat.Id, messageToChat, cancellationToken: cancellationToken); 
                                 // Отправить исходное сообщение
-                                await botClient.SendTextMessageAsync(message.Chat.Id,
-                                    $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}",
-                                    replyMarkup: inlineKeyboard,
-                                    cancellationToken: cancellationToken);
-                                await MessgeDeleteMethod(botClient, cancellationToken, message);
+                                // await botClient.SendTextMessageAsync(message.Chat.Id,
+                                //     $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}",
+                                //     replyMarkup: inlineKeyboard,
+                                //     cancellationToken: cancellationToken);
+                                // await MessgeDeleteMethod(botClient, cancellationToken, message);
                             }
                         }
-
                         break;
                 }
             }
@@ -114,7 +121,7 @@ namespace TelegramBot
                 var botClient = new TelegramBotClient(botToken);
 
                 var bot = new Bot();
-                botClient.StartReceiving(new DefaultUpdateHandler(bot.HandleUpdateAsync, bot.HandleErrorAsync));
+                botClient.StartReceiving(new DefaultUpdateHandler(bot.MessageUpdateAsync, bot.HandleErrorAsync));
 
                 Console.WriteLine("Bot started. Press any key to exit.");
                 await Task.Delay(-1);
