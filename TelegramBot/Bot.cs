@@ -1,4 +1,6 @@
-﻿using Telegram.Bot;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
+using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -14,7 +16,12 @@ namespace TelegramBot
             if (update.Message is { } message && message.From is { } sender &&
                 message.Text != null | message.Chat.Type == ChatType.Private)
             {
-                switch (message.Text)
+                var shoppingList = new List<ShoppingList>
+                {
+                    new ShoppingList { product = message.Text, isBought = false }
+                };
+
+                    switch (message.Text)
                 {
                     //Запускаем бота, добавляем новые кнопки в меню
                     case "/start":
@@ -166,8 +173,39 @@ namespace TelegramBot
             Console.WriteLine(exception.Message);
             return Task.CompletedTask;
         }
+        public List<> SortedListFromClient() //Result is sorted list of containers(containerFromClientList) got from client
+        {
+            var inputTextFromClient = Regex.Replace(inputBox.Text, @"\.", ",").Trim();
+            var inputList = inputTextFromClient.Split('\n');
+            var inputContainersList = new string[inputList.Length];
+            var inputWeightsList = new double[inputList.Length];
+
+            int weightMultiplier = int.Parse(weightMultiplierValueBox.Text);
+
+            List<Container> containersFromClientList = new();
+
+            for (int n = 0; n < inputList.Length; n++)
+            {
+                string[] temp1 = inputList[n].Split(new char[] { ' ', '\t' });
+                inputContainersList[n] = temp1[0];
+                inputWeightsList[n] = Double.Parse(temp1[1]) * weightMultiplier;
+
+                Container containerFromClient = new(n, inputContainersList[n], "None", inputWeightsList[n]);
+                containersFromClientList.Add(containerFromClient);
+            }
+
+            var containersFromClientOutputList = from p in containersFromClientList
+                orderby p.ContainerNumber
+                select p;
+
+            return containersFromClientList;
     }
 
+    class ShoppingList
+    {
+        public string product;
+        public bool isBought;
+    }
     public class Program
     {
         static async Task Main()
