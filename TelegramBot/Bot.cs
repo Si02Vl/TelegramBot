@@ -8,10 +8,11 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBot
 {
-    class Bot
+    public class Bot
     {
         //Обработка сообщений
-        public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+            CancellationToken cancellationToken)
         {
             if (update.Message is { } message && message.From is { } sender &&
                 message.Text != null | message.Chat.Type == ChatType.Private)
@@ -21,7 +22,7 @@ namespace TelegramBot
                     new ShoppingList { product = message.Text, isBought = false }
                 };
 
-                    switch (message.Text)
+                switch (message.Text)
                 {
                     //Запускаем бота, добавляем новые кнопки в меню
                     case "/start":
@@ -29,15 +30,11 @@ namespace TelegramBot
                         {
                             new[]
                             {
-                                new KeyboardButton("Стартуем!"),
-                                new KeyboardButton("Джип в Москве"),
-                                new KeyboardButton("Вдох-выдох, упал-отжался!"),
+                                new KeyboardButton("Очистить список"),
                             },
-                            new []
+                            new[]
                             {
                                 new KeyboardButton("Список команд"),
-                                new KeyboardButton("Удаляюсь, не хочу стартовать!"),
-                                new KeyboardButton("Просто кнопка")
                             }
                         });
                         await botClient.SendTextMessageAsync(message.Chat.Id,
@@ -45,104 +42,30 @@ namespace TelegramBot
                             replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
                         break;
 
-                    //Кнопки
-                    case "Стартуем!":
-                        string imagePath = "/app/out/Pictures/PictureStart.png";
-                        //string imagePath = Path.Combine("Pictures", "PictureStart.png");
-                        using (var photoStream = System.IO.File.OpenRead(imagePath))
-                        {
-                            var photo = new Telegram.Bot.Types.InputFileStream(photoStream, imagePath);
-                            await botClient.SendPhotoAsync(message.Chat.Id, photo,
-                                cancellationToken: cancellationToken);
-                        }
-                        await MessgeDeleteMethod(botClient, cancellationToken, message);
-                        break;
-                    
-                    case "Джип в Москве":
-                        await botClient.SendTextMessageAsync(message.Chat.Id, 
-                            "Джип в Москве пока не прогрет",
-                            cancellationToken: cancellationToken);
-                        break;
-                    
-                    case "Вдох-выдох, упал-отжался!":
-                        await botClient.SendTextMessageAsync(message.Chat.Id,
-                            $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{message.Text}",
-                            cancellationToken: cancellationToken);
-                        await MessgeDeleteMethod(botClient, cancellationToken, message);
-                        break;
-
-                    case "Список команд":
-                        string responseTextHelp = "Список команд: " + "\r\n/start ";
-                        await botClient.SendTextMessageAsync(message.Chat.Id, responseTextHelp,
-                            cancellationToken: cancellationToken);
-                        await MessgeDeleteMethod(botClient, cancellationToken, message);
-                        break;
-                    
-                    case "Удаляюсь, не хочу стартовать!":
-                        await botClient.SendTextMessageAsync(message.Chat.Id, 
-                            "Выхода нет!",
-                            cancellationToken: cancellationToken);
-                        break;
-                    
-                    // case "memberDelete":
-                    //     if (message.Text == "Удаляюсь, не хочу стартовать!")
-                    //     {
-                    //         // Удаляем пользователя из группы
-                    //         await botClient.BanChatMemberAsync(message.MessageId, message.From.Id, cancellationToken: cancellationToken);
-                    //     }
-                    //     break;
 
                     default:
                         if (sender.IsBot == false && message.Text != null)
                         {
                             string text = message.Text;
-                            string textLower = text.ToLower();
-                            string replaсedBadWorld = text;
-                            bool containsBadWord = false;
                             var inlineKeyboard = InlineKeyboardMethod(botClient, cancellationToken, message);
-                            
-                            // Список матерных слов
-                            string[] badWords;
-                            string filePath = "/app/out/Files/words.txt";
-                            //string filePath = Path.Combine("Files", "words.txt");
-                            badWords = System.IO.File.ReadAllLines(filePath);
-
-                            foreach (var word in badWords)
-                            {
-                                // Поиск матерных слов
-                                if (textLower.Contains(word))
-                                {
-                                    // Заменить матерное слово на желаемый текст
-                                    replaсedBadWorld = textLower.Replace(word, " *тут был мат* ");
-                                    containsBadWord = true;
-                                    break;
-                                }
-                            }
-
-                            if (containsBadWord)
-                            {
-                                // Отправить сообщение с замененными матерными словами
-                                await botClient.SendTextMessageAsync(message.Chat.Id,
-                                    $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{replaсedBadWorld}",
-                                    cancellationToken: cancellationToken);
-                                await MessgeDeleteMethod(botClient, cancellationToken, message);
-                            }
-                            else
                             {
                                 // Отправить исходное сообщение
                                 await botClient.SendTextMessageAsync(message.Chat.Id,
-                                    $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}", replyMarkup: inlineKeyboard,
+                                    $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}",
+                                    replyMarkup: inlineKeyboard,
                                     cancellationToken: cancellationToken);
                                 await MessgeDeleteMethod(botClient, cancellationToken, message);
                             }
                         }
+
                         break;
                 }
             }
         }
 
         //Инлайн клавиатура к сообщениям
-        private static InlineKeyboardMarkup InlineKeyboardMethod(ITelegramBotClient botClient, CancellationToken cancellationToken, Message message)
+        private static InlineKeyboardMarkup InlineKeyboardMethod(ITelegramBotClient botClient,
+            CancellationToken cancellationToken, Message message)
         {
             InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
@@ -161,64 +84,42 @@ namespace TelegramBot
         }
 
         //Удаление сообщений
-        private static async Task MessgeDeleteMethod(ITelegramBotClient botClient, CancellationToken cancellationToken, Message message)
+        private static async Task MessgeDeleteMethod(ITelegramBotClient botClient, CancellationToken cancellationToken,
+            Message message)
         {
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
                 cancellationToken: cancellationToken);
         }
 
         //Обработка ошибок
-        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+            CancellationToken cancellationToken)
         {
             Console.WriteLine(exception.Message);
             return Task.CompletedTask;
         }
-        public List<> SortedListFromClient() //Result is sorted list of containers(containerFromClientList) got from client
+
+        public class ShoppingList
         {
-            var inputTextFromClient = Regex.Replace(inputBox.Text, @"\.", ",").Trim();
-            var inputList = inputTextFromClient.Split('\n');
-            var inputContainersList = new string[inputList.Length];
-            var inputWeightsList = new double[inputList.Length];
+            public int id {get; set;}
+            public string product {get; set;}
+            public bool isBought {get; set;}
+        }
 
-            int weightMultiplier = int.Parse(weightMultiplierValueBox.Text);
-
-            List<Container> containersFromClientList = new();
-
-            for (int n = 0; n < inputList.Length; n++)
+        public class Program
+        {
+            static async Task Main()
             {
-                string[] temp1 = inputList[n].Split(new char[] { ' ', '\t' });
-                inputContainersList[n] = temp1[0];
-                inputWeightsList[n] = Double.Parse(temp1[1]) * weightMultiplier;
+                var botToken = "6958296449:AAFdDLvwL2sxEH4GU-Vo0wj-JsQOb6BDVQw";
+                var botClient = new TelegramBotClient(botToken);
 
-                Container containerFromClient = new(n, inputContainersList[n], "None", inputWeightsList[n]);
-                containersFromClientList.Add(containerFromClient);
+                var bot = new Bot();
+                botClient.StartReceiving(new DefaultUpdateHandler(bot.HandleUpdateAsync, bot.HandleErrorAsync));
+
+                Console.WriteLine("Bot started. Press any key to exit.");
+                await Task.Delay(-1);
+                Console.ReadKey();
             }
-
-            var containersFromClientOutputList = from p in containersFromClientList
-                orderby p.ContainerNumber
-                select p;
-
-            return containersFromClientList;
-    }
-
-    class ShoppingList
-    {
-        public string product;
-        public bool isBought;
-    }
-    public class Program
-    {
-        static async Task Main()
-        {
-            var botToken = "6958296449:AAFdDLvwL2sxEH4GU-Vo0wj-JsQOb6BDVQw";
-            var botClient = new TelegramBotClient(botToken);
-
-            var bot = new Bot();
-            botClient.StartReceiving(new DefaultUpdateHandler(bot.HandleUpdateAsync, bot.HandleErrorAsync));
-
-            Console.WriteLine("Bot started. Press any key to exit.");
-            await Task.Delay(-1);
-            Console.ReadKey();
         }
     }
 }
