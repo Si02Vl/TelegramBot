@@ -1,10 +1,11 @@
-﻿using System.ComponentModel;
-using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using File = System.IO.File;
 
 namespace TelegramBot
 {
@@ -14,88 +15,34 @@ namespace TelegramBot
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            //получаем сообщение
-            if (update.Message is { } message && message.From is { } sender &&
-                message.Text != null | message.Chat.Type == ChatType.Private)
+            //Создаем список покупок
+            var shoppingList = new List<ShoppingList>
             {
-                //Создаем список покупок
-                var shoppingList = new List<ShoppingList>
-                {
-                    new ShoppingList { product = message.Text, isBought = false }
-                };
-                
-                switch (message.Text)
-                {
-                    //Запускаем бота, добавляем новые кнопки в меню
-                    case "/start":
-                        var replyKeyboard = new ReplyKeyboardMarkup(new[]
-                        {
-                            new[]
-                            {
-                                new KeyboardButton("Очистить список"),
-                            },
-                            new[]
-                            {
-                                new KeyboardButton("Список команд"),
-                            }
-                        });
-                        await botClient.SendTextMessageAsync(message.Chat.Id,
-                            "Это бот Наталья-морская пехота! \r\nЯ сейчас сяду за руль, а ты вылетишь отсюда!!!",
-                            replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
-                        break;
+                new ShoppingList { product = update.Message.Text, isBought = false }
+            };
 
+            // Запись сообщения в файл
+            string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt"; // путь к файлу для записи
+            string fileContent = File.ReadAllText(filePath);
+            //string newItem = update.Message.Text;
 
-                    default:
-                        if (sender.IsBot == false && message.Text != null)
-                        {
-                            string text = message.Text;
-                            var inlineKeyboard = InlineKeyboardMethod(botClient, cancellationToken, message);
-                            {
-                                string messageToChat = "Список покупок:\n";
-                                foreach (var item in shoppingList)
-                                {
-                                    messageToChat += $"{item.product} - {(item.isBought ? "куплено" : "не куплено")}\n";
-                                }
-                                await botClient.SendTextMessageAsync(message.Chat.Id, messageToChat, cancellationToken: cancellationToken); 
-                                // Отправить исходное сообщение
-                                // await botClient.SendTextMessageAsync(message.Chat.Id,
-                                //     $"Пользователь {message.Chat.FirstName} смолвил:" + $"\r\n{text}",
-                                //     replyMarkup: inlineKeyboard,
-                                //     cancellationToken: cancellationToken);
-                                // await MessgeDeleteMethod(botClient, cancellationToken, message);
-                            }
-                        }
-                        break;
+            foreach (var item in shoppingList)
+            {
+                string newItem = $"{item.product} - {(item.isBought ? "куплено" : "не куплено")}";
+                if (!fileContent.Contains(newItem))
+                {
+                    fileContent += newItem + "\n";
                 }
             }
-        }
-
-        //Инлайн клавиатура к сообщениям
-        private static InlineKeyboardMarkup InlineKeyboardMethod(ITelegramBotClient botClient,
-            CancellationToken cancellationToken, Message message)
-        {
-            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
+            
+            try
             {
-                new[] // Первая строка инлайн-клавиатуры
-                {
-                    InlineKeyboardButton.WithCallbackData("Кнопка 1", "button1"),
-                    InlineKeyboardButton.WithCallbackData("Кнопка 2", "button2"),
-                },
-                new[] // Вторая строка инлайн-клавиатуры
-                {
-                    InlineKeyboardButton.WithCallbackData("Кнопка 3", "button3"),
-                    InlineKeyboardButton.WithCallbackData("Кнопка 4", "button4"),
-                }
-            });
-            return inlineKeyboard;
-        }
-
-        //Удаление сообщений
-        private static async Task MessgeDeleteMethod(ITelegramBotClient botClient, CancellationToken cancellationToken,
-            Message message)
-        {
-            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
-                cancellationToken: cancellationToken);
+                File.WriteAllText(filePath, fileContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
+            }
         }
 
         //Обработка ошибок
