@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using File = System.IO.File;
 
@@ -44,9 +38,14 @@ namespace TelegramBot
 
         public Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
         {
+            Console.WriteLine("Метод ClearShoppingListAsync вызван.");
             string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
-            File.WriteAllText(filePath, "");
-            return Task.CompletedTask;
+            File.WriteAllText(filePath, "Список покупок:\n\r");
+
+            // Обновляем клавиатуру после очистки списка
+            ControlShoppingListKeyboardAsync(botClient, message, cancellationToken);
+
+            return ControlShoppingListKeyboardAsync(botClient, message, cancellationToken);
         }
 
         public async Task ControlShoppingListKeyboardAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
@@ -63,21 +62,6 @@ namespace TelegramBot
             });
 
             await botClient.SendTextMessageAsync(chatId, "Выберите действие:", replyMarkup: keyboard, cancellationToken: cancellationToken);
-        }
-
-        public async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery, CancellationToken cancellationToken)
-        {
-            var chatId = callbackQuery.Message.Chat.Id;
-
-            if (callbackQuery.Data == "Очистить список")
-            {
-                await ClearShoppingListAsync(botClient, callbackQuery.Message, cancellationToken);
-            }
-            else if (callbackQuery.Data == "Показать список")
-            {
-                // Реализуйте логику для отправки списка в чат
-                // Например, создайте метод SendShoppingListAsync и вызовите его здесь
-            }
         }
 
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
