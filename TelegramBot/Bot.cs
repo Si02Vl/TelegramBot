@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using File = System.IO.File;
 
@@ -26,11 +27,9 @@ namespace TelegramBot
                 case ("Показать список"):
                     await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
                     
-                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Выберите товар", 
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Выберите товар:", 
                         replyMarkup: InlineKeyboardFromTextFile("C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt"), 
                         cancellationToken: cancellationToken);
-                    
-                    //CreateInlineKeyboardFromTextFile("C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt");
                     break;
 
                 default:
@@ -43,7 +42,6 @@ namespace TelegramBot
         {
             shoppingList.Add(new ShoppingList
             {
-                id = shoppingList.Count + 1, 
                 product = update.Message.Text, 
                 isBought = false
             });
@@ -76,8 +74,8 @@ namespace TelegramBot
         {
             Console.WriteLine("Метод ShowShoppingListAsync вызван.");
             string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
-            await botClient.SendTextMessageAsync(updateMessage.Chat.Id, File.ReadAllText(filePath),
-                cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(updateMessage.Chat.Id, $"Список покупок:\n\r" + File.ReadAllText(filePath),
+                cancellationToken: cancellationToken, parseMode: ParseMode.Markdown);
         }
 
         public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
@@ -111,36 +109,6 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        /*public Task InlineKeyboard(ITelegramBotClient botClient, CallbackQuery callbackQuery,
-            CancellationToken cancellationToken)
-        {
-            var inlineKeyboard = new InlineKeyboardMarkup(
-                new[]
-                {
-                    new[]
-                    {
-                        InlineKeyboardButton.WithCallbackData("Куплено", "Bought"),
-                    }
-                });
-            
-            return Task.CompletedTask;
-        }*/
-
-        /*private InlineKeyboardMarkup InlineKeyboard()
-        {
-            return new InlineKeyboardMarkup(new[]
-            {
-                new[] // Первая строка инлайн-клавиатуры
-                {
-                    InlineKeyboardButton.WithCallbackData("Кнопка 1", "button1"),
-                },
-                new[] // Вторая строка инлайн-клавиатуры
-                {
-                    InlineKeyboardButton.WithCallbackData("Кнопка 3", "button3"),
-                }
-            });
-        }*/
-
         public InlineKeyboardMarkup InlineKeyboardFromTextFile(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath);
@@ -149,7 +117,6 @@ namespace TelegramBot
             {
                 InlineKeyboardButton.WithCallbackData(line, $"button_{line.Replace(" ", "_")}_data")
             }).ToArray();
-
             return new InlineKeyboardMarkup(buttons);
         }
     }
