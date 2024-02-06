@@ -28,7 +28,7 @@ namespace TelegramBot
                     await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
                     
                     await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Выберите товар:", 
-                        replyMarkup: InlineKeyboardFromTextFile("C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt"), 
+                        replyMarkup: InlineKeyboardFromTextFile("TelegramBot/shoppingList.txt"), 
                         cancellationToken: cancellationToken);
                     break;
 
@@ -46,7 +46,7 @@ namespace TelegramBot
                 isBought = false
             });
 
-            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
+            string filePath = "TelegramBot/shoppingList.txt";
             string fileContent = File.ReadAllText(filePath);
 
             
@@ -73,7 +73,7 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Метод ShowShoppingListAsync вызван.");
-            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
+            string filePath = "TelegramBot/shoppingList.txt";
             await botClient.SendTextMessageAsync(updateMessage.Chat.Id, $"Список покупок:\n\r" + File.ReadAllText(filePath),
                 cancellationToken: cancellationToken, parseMode: ParseMode.Markdown);
         }
@@ -82,7 +82,7 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Метод ClearShoppingListAsync вызван.");
-            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
+            string filePath = "TelegramBot/shoppingList.txt";
             File.WriteAllText(filePath, "Список покупок:\n\r");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен",
                 cancellationToken: cancellationToken);
@@ -119,5 +119,28 @@ namespace TelegramBot
             }).ToArray();
             return new InlineKeyboardMarkup(buttons);
         }
+        
+        //тут здецЪ
+        /*botClient.OnCallbackQuery += async (sender, callbackQuery) =>
+        {
+            // Получаем данные обратного вызова
+            string callbackData = callbackQuery.Data;
+
+            // Находим индекс нажатой кнопки в массиве кнопок
+            int buttonIndex = Array.FindIndex(buttons, row => row.Any(button => $"button_{button.Replace(" ", "_")}_data" == callbackData));
+
+            // Если кнопка существует
+            if (buttonIndex != -1)
+            {
+                // Выбираем соответствующую строку из списка
+                string selectedLine = lines[buttonIndex];
+
+                // Зачеркиваем строку
+                lines[buttonIndex] = $"~~{selectedLine}~~";
+
+                // Отправляем обновленный список строк обратно в Telegram
+                await botClient.SendTextMessageAsync(chatId, string.Join("\n", lines));
+            }
+        };*/
     }
 }
