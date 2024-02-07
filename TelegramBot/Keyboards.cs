@@ -5,7 +5,7 @@ using File = System.IO.File;
 
 namespace TelegramBot;
 
-public class Keyboard
+public class Keyboards
 {
     public static Task CreateChatKeyboardAsync(ITelegramBotClient botClient, Message message,
         CancellationToken cancellationToken)

@@ -1,17 +1,16 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using File = System.IO.File;
-using TelegramBot = TelegramBot.Keyboard;
 
 
 namespace TelegramBot
 {
-    public class TelegramBot
+    public class TelegramBotProgram
     {
-        string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
-        //string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
-        private List<ShoppingList> shoppingList = new List<ShoppingList>();
-
+        string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBotProgram/shoppingListData.txt";
+        //string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBotProgram/shoppingListData.txt";
+        private List<ShoppingList> shoppingList = new ();
+        
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
@@ -22,7 +21,7 @@ namespace TelegramBot
                 switch (message)
                 {
                     case ("/start"):
-                        await Keyboard.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
+                        await Keyboards.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
                         break;
 
                     case ("Очистить список"):
@@ -39,13 +38,15 @@ namespace TelegramBot
                 }
             }
         }
+       
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {
             Console.WriteLine(exception.Message);
             return Task.CompletedTask;
         }
-        public void WritingToFile(Update update)
+
+        private void WritingToFile(Update update)
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
@@ -75,6 +76,7 @@ namespace TelegramBot
                 Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
             }
         }
+        
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
@@ -83,7 +85,7 @@ namespace TelegramBot
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
                     $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                    cancellationToken: cancellationToken, replyMarkup: Keyboard.CreateInlineKeyboardFromShoppingListFile(filePath));
+                    cancellationToken: cancellationToken, replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(filePath));
             }
             else
             {
@@ -91,7 +93,8 @@ namespace TelegramBot
                     $"Список покупок пуст", cancellationToken: cancellationToken);
             }
         }
-        public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
+
+        private async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод очистки списка.");
