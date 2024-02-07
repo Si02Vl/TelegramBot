@@ -3,6 +3,7 @@ using Telegram.Bot.Types;
 using File = System.IO.File;
 using TelegramBot = TelegramBot.Keyboard;
 
+
 namespace TelegramBot
 {
     public class TelegramBot
@@ -21,7 +22,7 @@ namespace TelegramBot
                 switch (message)
                 {
                     case ("/start"):
-                        await Keyboard.ChatKeyboardAsync(botClient, update.Message, cancellationToken);
+                        await Keyboard.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
                         break;
 
                     case ("Очистить список"):
@@ -37,6 +38,12 @@ namespace TelegramBot
                         break;
                 }
             }
+        }
+        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+            CancellationToken cancellationToken)
+        {
+            Console.WriteLine(exception.Message);
+            return Task.CompletedTask;
         }
         public void WritingToFile(Update update)
         {
@@ -76,7 +83,7 @@ namespace TelegramBot
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
                     $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                    cancellationToken: cancellationToken, replyMarkup: Keyboard.InlineKeyboardFromTextFile(filePath));
+                    cancellationToken: cancellationToken, replyMarkup: Keyboard.CreateInlineKeyboardFromShoppingListFile(filePath));
             }
             else
             {
@@ -89,14 +96,8 @@ namespace TelegramBot
         {
             Console.WriteLine("Вызван метод очистки списка.");
             File.WriteAllText(filePath, "");
-            await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен",
+            await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
-        }
-        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
-            CancellationToken cancellationToken)
-        {
-            Console.WriteLine(exception.Message);
-            return Task.CompletedTask;
         }
     }
 }

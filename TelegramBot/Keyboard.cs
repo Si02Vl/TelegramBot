@@ -7,7 +7,7 @@ namespace TelegramBot;
 
 public class Keyboard
 {
-    public static Task ChatKeyboardAsync(ITelegramBotClient botClient, Message message,
+    public static Task CreateChatKeyboardAsync(ITelegramBotClient botClient, Message message,
         CancellationToken cancellationToken)
     {
         var keyboard = new ReplyKeyboardMarkup(new[]
@@ -23,7 +23,7 @@ public class Keyboard
             replyMarkup: keyboard, cancellationToken: cancellationToken);
     }
     
-    public static InlineKeyboardMarkup InlineKeyboardFromTextFile(string filePath)
+    public static InlineKeyboardMarkup CreateInlineKeyboardFromShoppingListFile(string filePath)
     {
         string[] lines = File.ReadAllLines(filePath);
 
