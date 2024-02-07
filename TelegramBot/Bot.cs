@@ -68,16 +68,22 @@ namespace TelegramBot
                 Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
             }
         }
-
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Метод показа списка покупок вызван.");
-            await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                cancellationToken: cancellationToken, replyMarkup: InlineKeyboardFromTextFile(filePath));
+            if (File.ReadAllText(filePath) != "")
+            {
+                await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
+                    $"Список покупок:\n\r" + File.ReadAllText(filePath),
+                    cancellationToken: cancellationToken, replyMarkup: InlineKeyboardFromTextFile(filePath));
+            }
+            else
+            {
+                await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
+                    $"Список покупок пуст", cancellationToken: cancellationToken);
+            }
         }
-
         public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
@@ -86,7 +92,6 @@ namespace TelegramBot
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен",
                 cancellationToken: cancellationToken);
         }
-
         public Task ChatKeyboardAsync(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
@@ -102,14 +107,12 @@ namespace TelegramBot
                                                                    "или введите покупки отдельными сообщениями.",
                 replyMarkup: keyboard, cancellationToken: cancellationToken);
         }
-
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {
             Console.WriteLine(exception.Message);
             return Task.CompletedTask;
         }
-
         public InlineKeyboardMarkup InlineKeyboardFromTextFile(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath);
