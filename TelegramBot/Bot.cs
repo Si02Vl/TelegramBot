@@ -33,11 +33,6 @@ namespace TelegramBot
 
                     case ("Показать список"):
                         await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                    
-                        await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Выберите товар:", 
-                            replyMarkup: InlineKeyboardFromTextFile(filePath), 
-                            cancellationToken: cancellationToken);
-                        //await HandleCallbackQueryAsync(botClient, update.CallbackQuery, null, null, update.Message.Chat.Id);
                         break;
 
                     default:
@@ -59,7 +54,7 @@ namespace TelegramBot
 
             foreach (var item in shoppingList)
             {
-                   string newItem = $"{item.id} : {item.product} - {(item.isBought ? "куплено" : "не куплено")}";
+                string newItem = $"{item.product}"; //- {(item.isBought ? "куплено" : "не куплено")};
                    if (!fileContent.Contains(newItem))
                    {
                        fileContent += newItem + "\n";
@@ -79,9 +74,9 @@ namespace TelegramBot
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
-            Console.WriteLine("Метод ShowShoppingListAsync вызван.");
+            Console.WriteLine("Метод показа списка покупок вызван.");
             await botClient.SendTextMessageAsync(updateMessage.Chat.Id, $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                cancellationToken: cancellationToken, parseMode: ParseMode.Markdown);
+                cancellationToken: cancellationToken,replyMarkup: InlineKeyboardFromTextFile(filePath));
         }
 
         public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
@@ -104,7 +99,9 @@ namespace TelegramBot
                     new KeyboardButton("Показать список")
                 }
             });
-            return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие:", replyMarkup: keyboard, cancellationToken: cancellationToken);
+            return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие на клавиатуре " +
+                                                                   "или введите покупки отдельными сообщениями.", 
+                replyMarkup: keyboard, cancellationToken: cancellationToken);
         }
 
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
@@ -123,20 +120,6 @@ namespace TelegramBot
                 InlineKeyboardButton.WithCallbackData(line, $"button_{line.Replace(" ", "_")}_data")
             }).ToArray();
             return new InlineKeyboardMarkup(buttons);
-        }
-        
-        private async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery, string[] buttons, string[] lines, long chatId)
-        {
-            string callbackData = callbackQuery.Data;
-            int buttonIndex = Array.FindIndex(buttons, row => row.Any(button => 
-                $"button_{button}_data" == callbackData));
-
-            if (buttonIndex != -1)
-            {
-                string selectedLine = lines[buttonIndex];
-                lines[buttonIndex] = $"~~{selectedLine}~~";
-                await botClient.SendTextMessageAsync(chatId, string.Join("\n", lines));
-            }
         }
     }
 }
