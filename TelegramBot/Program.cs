@@ -10,7 +10,8 @@ public class Program
         var botToken = "6958296449:AAFdDLvwL2sxEH4GU-Vo0wj-JsQOb6BDVQw";
         var botClient = new TelegramBotClient(botToken);
 
-        var bot = new Bot();
+        var bot = new TelegramBot();
+        //var keyboard = new Keyboard();
         botClient.StartReceiving(new DefaultUpdateHandler(bot.MessageUpdateAsync, bot.HandleErrorAsync));
             
         Console.WriteLine("Bot started. Press any key to exit.");

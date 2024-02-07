@@ -1,11 +1,11 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 using File = System.IO.File;
+using TelegramBot = TelegramBot.Keyboard;
 
 namespace TelegramBot
 {
-    public class Bot
+    public class TelegramBot
     {
         string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
         //string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
@@ -21,7 +21,7 @@ namespace TelegramBot
                 switch (message)
                 {
                     case ("/start"):
-                        await ChatKeyboardAsync(botClient, update.Message, cancellationToken);
+                        await Keyboard.ChatKeyboardAsync(botClient, update.Message, cancellationToken);
                         break;
 
                     case ("Очистить список"):
@@ -71,12 +71,12 @@ namespace TelegramBot
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
-            Console.WriteLine("Метод показа списка покупок вызван.");
+            Console.WriteLine("Вызван метод показа списка покупок.");
             if (File.ReadAllText(filePath) != "")
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
                     $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                    cancellationToken: cancellationToken, replyMarkup: InlineKeyboardFromTextFile(filePath));
+                    cancellationToken: cancellationToken, replyMarkup: Keyboard.InlineKeyboardFromTextFile(filePath));
             }
             else
             {
@@ -87,41 +87,16 @@ namespace TelegramBot
         public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
-            Console.WriteLine("Метод очистки списка вызван.");
+            Console.WriteLine("Вызван метод очистки списка.");
             File.WriteAllText(filePath, "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен",
                 cancellationToken: cancellationToken);
-        }
-        public Task ChatKeyboardAsync(ITelegramBotClient botClient, Message message,
-            CancellationToken cancellationToken)
-        {
-            var keyboard = new ReplyKeyboardMarkup(new[]
-            {
-                new[]
-                {
-                    new KeyboardButton("Очистить список"),
-                    new KeyboardButton("Показать список")
-                }
-            });
-            return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие на клавиатуре " +
-                                                                   "или введите покупки отдельными сообщениями.",
-                replyMarkup: keyboard, cancellationToken: cancellationToken);
         }
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {
             Console.WriteLine(exception.Message);
             return Task.CompletedTask;
-        }
-        public InlineKeyboardMarkup InlineKeyboardFromTextFile(string filePath)
-        {
-            string[] lines = File.ReadAllLines(filePath);
-
-            var buttons = lines.Select(line => new[]
-            {
-                InlineKeyboardButton.WithCallbackData(line, $"button_{line.Replace(" ", "_")}_data")
-            }).ToArray();
-            return new InlineKeyboardMarkup(buttons);
         }
     }
 }
