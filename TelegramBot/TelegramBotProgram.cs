@@ -7,8 +7,7 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBotProgram/shoppingListData.txt";
-        //string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBotProgram/shoppingListData.txt";
+        string filePath = Path.Combine(Environment.CurrentDirectory, "shoppingListData.txt");
         private List<ShoppingList> shoppingList = new ();
         
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
