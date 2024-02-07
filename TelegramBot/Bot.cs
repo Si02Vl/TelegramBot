@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -10,31 +11,39 @@ namespace TelegramBot
 {
     public class Bot
     {
+        string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
         private List<ShoppingList> shoppingList = new List<ShoppingList>();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            var message = update.Message.Text;
-            await ChatKeyboardAsync(botClient, update.Message, cancellationToken);
-            
-            switch (message)
+            if (update.Message != null)
             {
-                case ("Очистить список"):
-                    await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
-                    break;
+                var message = update.Message.Text;
 
-                case ("Показать список"):
-                    await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                switch (message)
+                {
+                    case ("/start"):
+                        await ChatKeyboardAsync(botClient, update.Message, cancellationToken);
+                        break;  
+                
+                    case ("Очистить список"):
+                        await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
+                        break;
+
+                    case ("Показать список"):
+                        await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
                     
-                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Выберите товар:", 
-                        replyMarkup: InlineKeyboardFromTextFile("TelegramBot/shoppingList.txt"), 
-                        cancellationToken: cancellationToken);
-                    break;
+                        await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Выберите товар:", 
+                            replyMarkup: InlineKeyboardFromTextFile(filePath), 
+                            cancellationToken: cancellationToken);
+                        //await HandleCallbackQueryAsync(botClient, update.CallbackQuery, null, null, update.Message.Chat.Id);
+                        break;
 
-                default:
-                    WritingToFile(update);
-                    break;
+                    default:
+                        WritingToFile(update);
+                        break;
+                }
             }
         }
 
@@ -46,10 +55,8 @@ namespace TelegramBot
                 isBought = false
             });
 
-            string filePath = "TelegramBot/shoppingList.txt";
             string fileContent = File.ReadAllText(filePath);
 
-            
             foreach (var item in shoppingList)
             {
                    string newItem = $"{item.id} : {item.product} - {(item.isBought ? "куплено" : "не куплено")}";
@@ -73,7 +80,6 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Метод ShowShoppingListAsync вызван.");
-            string filePath = "TelegramBot/shoppingList.txt";
             await botClient.SendTextMessageAsync(updateMessage.Chat.Id, $"Список покупок:\n\r" + File.ReadAllText(filePath),
                 cancellationToken: cancellationToken, parseMode: ParseMode.Markdown);
         }
@@ -81,9 +87,8 @@ namespace TelegramBot
         public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
-            Console.WriteLine("Метод ClearShoppingListAsync вызван.");
-            string filePath = "TelegramBot/shoppingList.txt";
-            File.WriteAllText(filePath, "Список покупок:\n\r");
+            Console.WriteLine("Метод очистки списка вызван.");
+            File.WriteAllText(filePath, "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен",
                 cancellationToken: cancellationToken);
         }
@@ -99,7 +104,7 @@ namespace TelegramBot
                     new KeyboardButton("Показать список")
                 }
             });
-            return Task.CompletedTask;
+            return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие:", replyMarkup: keyboard, cancellationToken: cancellationToken);
         }
 
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
@@ -120,27 +125,18 @@ namespace TelegramBot
             return new InlineKeyboardMarkup(buttons);
         }
         
-        //тут здецЪ
-        /*botClient.OnCallbackQuery += async (sender, callbackQuery) =>
+        private async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery, string[] buttons, string[] lines, long chatId)
         {
-            // Получаем данные обратного вызова
             string callbackData = callbackQuery.Data;
+            int buttonIndex = Array.FindIndex(buttons, row => row.Any(button => 
+                $"button_{button}_data" == callbackData));
 
-            // Находим индекс нажатой кнопки в массиве кнопок
-            int buttonIndex = Array.FindIndex(buttons, row => row.Any(button => $"button_{button.Replace(" ", "_")}_data" == callbackData));
-
-            // Если кнопка существует
             if (buttonIndex != -1)
             {
-                // Выбираем соответствующую строку из списка
                 string selectedLine = lines[buttonIndex];
-
-                // Зачеркиваем строку
                 lines[buttonIndex] = $"~~{selectedLine}~~";
-
-                // Отправляем обновленный список строк обратно в Telegram
                 await botClient.SendTextMessageAsync(chatId, string.Join("\n", lines));
             }
-        };*/
+        }
     }
 }
