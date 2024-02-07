@@ -8,6 +8,7 @@ namespace TelegramBot
     public class Bot
     {
         string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
+        //string filePath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingList.txt";
         private List<ShoppingList> shoppingList = new List<ShoppingList>();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -37,7 +38,6 @@ namespace TelegramBot
                 }
             }
         }
-
         public void WritingToFile(Update update)
         {
             if (update.Message != null)
