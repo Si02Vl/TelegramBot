@@ -1,5 +1,6 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
+using Telegram.Bot.Types.Enums;
 
 namespace TelegramBot;
 
@@ -12,8 +13,7 @@ public class Program
 
         var bot = new Bot();
         botClient.StartReceiving(new DefaultUpdateHandler(bot.MessageUpdateAsync, bot.HandleErrorAsync));
-        //await bot.ChatKeyboardAsync(botClient, null, CancellationToken.None);
-        
+            
         Console.WriteLine("Bot started. Press any key to exit.");
         await Task.Delay(-1);
         Console.ReadKey();

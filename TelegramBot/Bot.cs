@@ -1,9 +1,5 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
-using Telegram.Bot;
-using Telegram.Bot.Extensions.Polling;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using File = System.IO.File;
 
@@ -25,8 +21,8 @@ namespace TelegramBot
                 {
                     case ("/start"):
                         await ChatKeyboardAsync(botClient, update.Message, cancellationToken);
-                        break;  
-                
+                        break;
+
                     case ("Очистить список"):
                         await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
                         break;
@@ -44,21 +40,23 @@ namespace TelegramBot
 
         public void WritingToFile(Update update)
         {
-            shoppingList.Add(new ShoppingList
-            {
-                product = update.Message.Text, 
-                isBought = false
-            });
+            if (update.Message != null)
+                if (update.Message.Text != null)
+                    shoppingList.Add(new ShoppingList
+                    {
+                        product = update.Message.Text,
+                        isBought = false
+                    });
 
             string fileContent = File.ReadAllText(filePath);
 
             foreach (var item in shoppingList)
             {
                 string newItem = $"{item.product}"; //- {(item.isBought ? "куплено" : "не куплено")};
-                   if (!fileContent.Contains(newItem))
-                   {
-                       fileContent += newItem + "\n";
-                   }
+                if (!fileContent.Contains(newItem))
+                {
+                    fileContent += newItem + "\n";
+                }
             }
 
             try
@@ -75,8 +73,9 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Метод показа списка покупок вызван.");
-            await botClient.SendTextMessageAsync(updateMessage.Chat.Id, $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                cancellationToken: cancellationToken,replyMarkup: InlineKeyboardFromTextFile(filePath));
+            await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
+                $"Список покупок:\n\r" + File.ReadAllText(filePath),
+                cancellationToken: cancellationToken, replyMarkup: InlineKeyboardFromTextFile(filePath));
         }
 
         public async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
@@ -100,7 +99,7 @@ namespace TelegramBot
                 }
             });
             return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие на клавиатуре " +
-                                                                   "или введите покупки отдельными сообщениями.", 
+                                                                   "или введите покупки отдельными сообщениями.",
                 replyMarkup: keyboard, cancellationToken: cancellationToken);
         }
 
@@ -114,7 +113,7 @@ namespace TelegramBot
         public InlineKeyboardMarkup InlineKeyboardFromTextFile(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath);
-            
+
             var buttons = lines.Select(line => new[]
             {
                 InlineKeyboardButton.WithCallbackData(line, $"button_{line.Replace(" ", "_")}_data")
