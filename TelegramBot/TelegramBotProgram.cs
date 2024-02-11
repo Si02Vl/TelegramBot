@@ -84,7 +84,8 @@ namespace TelegramBot
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
                     $"Список покупок:\n\r" + File.ReadAllText(filePath),
-                    cancellationToken: cancellationToken, replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(filePath));
+                    cancellationToken: cancellationToken, 
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(filePath));
             }
             else
             {
