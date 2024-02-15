@@ -110,6 +110,7 @@ namespace TelegramBot
                 replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));
             
             Console.WriteLine("Вызван метод показа списка покупок.");
+            
             if (File.ReadAllText(_filePath) != "")
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
