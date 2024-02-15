@@ -16,7 +16,7 @@ namespace TelegramBot
             if (update.CallbackQuery != null)
             {
                 InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
-                InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery);
+                await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient, chatId: update.CallbackQuery.From.Id);
             }
 
             if (update.Message != null)
@@ -51,7 +51,7 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        private void WritingToFile(Update update)
+        private void WritingToFile(Update update) 
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
@@ -71,10 +71,11 @@ namespace TelegramBot
                     fileContent += newItem + "\n";
                 }
             }
-
             try
             {
                 File.WriteAllText(filePath, fileContent);
+            
+                UserMessageDelete(botClient: botClient, update.Message , cancellationToken: CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -106,6 +107,12 @@ namespace TelegramBot
             Console.WriteLine("Вызван метод очистки списка.");
             File.WriteAllText(filePath, "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
+                cancellationToken: cancellationToken);
+        }
+        private async Task UserMessageDelete(ITelegramBotClient botClient, Message message,
+            CancellationToken cancellationToken)
+        {
+            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
                 cancellationToken: cancellationToken);
         }
     }
