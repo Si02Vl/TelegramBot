@@ -16,6 +16,7 @@ namespace TelegramBot
             if (update.CallbackQuery != null)
             {
                 InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
+                InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery);
             }
 
             if (update.Message != null)
