@@ -2,7 +2,7 @@
 
 public class ShoppingList
 {
-    public int id {get; set;}
-    public string product {get; set;}
-    public bool isBought {get; set;}
+    public int Id {get; set;}
+    public string Product {get; set;}
+    public bool IsBought {get; set;}
 }

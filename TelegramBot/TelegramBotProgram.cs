@@ -7,8 +7,8 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        string filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
-        private List<ShoppingList> shoppingList = new ();
+        private readonly string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
+        private readonly List<ShoppingList> _shoppingList = new ();
         
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ namespace TelegramBot
                         break;
 
                     default:
-                        WritingToFile(update);
+                        WritingToFile(update, botClient, cancellationToken);
                         break;
                 }
             }
@@ -51,21 +51,21 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        private void WritingToFile(Update update) 
+        private void WritingToFile(Update update,ITelegramBotClient botClient, CancellationToken cancellationToken) 
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
-                    shoppingList.Add(new ShoppingList
+                    _shoppingList.Add(new ShoppingList
                     {
-                        product = update.Message.Text,
-                        isBought = false
+                        Product = update.Message.Text,
+                        IsBought = false
                     });
 
-            string fileContent = File.ReadAllText(filePath);
+            string fileContent = File.ReadAllText(_filePath);
 
-            foreach (var item in shoppingList)
+            foreach (var item in _shoppingList)
             {
-                string newItem = $"{item.product}"; //- {(item.isBought ? "куплено" : "не куплено")};
+                string newItem = $"{item.Product}"; //- {(item.isBought ? "куплено" : "не куплено")};
                 if (!fileContent.Contains(newItem))
                 {
                     fileContent += newItem + "\n";
@@ -73,9 +73,9 @@ namespace TelegramBot
             }
             try
             {
-                File.WriteAllText(filePath, fileContent);
-            
-                UserMessageDelete(botClient: botClient, update.Message , cancellationToken: CancellationToken.None);
+                File.WriteAllText(_filePath, fileContent);
+
+                this.UserMessageDelete(botClient, update.Message, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -87,12 +87,12 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод показа списка покупок.");
-            if (File.ReadAllText(filePath) != "")
+            if (File.ReadAllText(_filePath) != "")
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"Список покупок:\n\r" + File.ReadAllText(filePath),
+                    $"Список покупок:\n\r" + File.ReadAllText(_filePath),
                     cancellationToken: cancellationToken, 
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(filePath));
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath));
             }
             else
             {
@@ -105,7 +105,7 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод очистки списка.");
-            File.WriteAllText(filePath, "");
+            File.WriteAllText(_filePath, "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
         }
