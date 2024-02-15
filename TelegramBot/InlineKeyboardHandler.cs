@@ -5,20 +5,20 @@ namespace TelegramBot;
 
 public class InlineKeyboardHandler
 {
-    private readonly ITelegramBotClient _botClient;
+    private static ITelegramBotClient _botClient;
 
     public InlineKeyboardHandler(ITelegramBotClient botClient)
     {
         _botClient = botClient;
     }
 
-    public async Task HandleInlineKeyboardAction(CallbackQuery callbackQuery)
+    public static async Task HandleInlineKeyboardAction(CallbackQuery callbackQuery)
     {
         // Получаем данные обратного вызова
         string callbackData = callbackQuery.Data;
 
         // Обработка действий в зависимости от данных обратного вызова
-        if (callbackData.StartsWith("button_"))
+        if (callbackData.StartsWith("button_11_data"))
         {
             // Извлечь текст из данных обратного вызова
             string buttonText = callbackData.Split("_data")[0].Replace("button_", "").Replace("_", " ");
