@@ -1,5 +1,6 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
 
 namespace TelegramBot
@@ -12,6 +13,17 @@ namespace TelegramBot
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
+            //var inlineKeyboardHandler = new InlineKeyboardHandler();
+            InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
+            // if (update.CallbackQuery != null)
+            // {
+            //     CallbackQuery callbackQuery = update.CallbackQuery;
+            //     await botClient.AnswerCallbackQueryAsync(
+            //         callbackQuery.Id,
+            //         $"Received {callbackQuery.Data}");
+            // }
+            
+            
             if (update.Message != null)
             {
                 var message = update.Message.Text;
@@ -28,10 +40,6 @@ namespace TelegramBot
 
                     case ("Показать список"):
                         await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                        
-                        var inlineKeyboardHandler = new InlineKeyboardHandler(botClient);
-                        if (update.CallbackQuery != null)
-                            inlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
                         break;
 
                     default:

@@ -11,7 +11,6 @@ public static class BotClient
         var botClient = new TelegramBotClient(botToken);
 
         var bot = new TelegramBotProgram();
-        //var keyboard = new Keyboards();
         botClient.StartReceiving(new DefaultUpdateHandler(bot.MessageUpdateAsync, bot.HandleErrorAsync));
             
         Console.WriteLine("Bot started. Press any key to exit.");

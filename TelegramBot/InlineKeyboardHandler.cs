@@ -8,12 +8,7 @@ namespace TelegramBot
         private ITelegramBotClient _botClient;
         private string buttonCallbackData;
 
-        public InlineKeyboardHandler(ITelegramBotClient botClient)
-        {
-            _botClient = botClient;
-        }
-
-        public void InlineKeyboardDataGetting(CallbackQuery callbackQuery)
+        public static void InlineKeyboardDataGetting(CallbackQuery callbackQuery)
         {
             var buttonCallbackData = callbackQuery.Data;
             Console.WriteLine(buttonCallbackData);
