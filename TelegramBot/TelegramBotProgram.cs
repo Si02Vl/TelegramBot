@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using System.Text;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
@@ -22,7 +23,16 @@ namespace TelegramBot
             if (update.Message != null)
             {
                 var message = update.Message.Text;
-
+                var callbackData = update.CallbackQuery.Data;
+                
+                if (int.TryParse(callbackData, out int index))
+                {
+                    if (index >= 0 && index < _shoppingList.Count)
+                    {
+                        _shoppingList[index].IsBought = true;
+                        await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                    }
+                }
                 switch (message)
                 {
                     case ("/start"):
@@ -85,14 +95,27 @@ namespace TelegramBot
         
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
+        ////разобраться с изменениями
         {
+            StringBuilder shoppingListText = new StringBuilder();
+            foreach (var item in _shoppingList)
+            {
+                string newItem = item.IsBought ? $"~~{item.Product}~~" : item.Product;
+                shoppingListText.AppendLine(newItem);
+            }
+
+            await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
+                $"Список покупок:\n\r{shoppingListText.ToString()}",
+                cancellationToken: cancellationToken, 
+                replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));
+            
             Console.WriteLine("Вызван метод показа списка покупок.");
             if (File.ReadAllText(_filePath) != "")
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
                     $"Список покупок:\n\r" + File.ReadAllText(_filePath),
                     cancellationToken: cancellationToken, 
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath));
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));//тут изменения
             }
             else
             {

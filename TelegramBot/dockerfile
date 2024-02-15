@@ -7,8 +7,7 @@ WORKDIR /app
 COPY . /app
 
 # Копирование файлов изображений
-COPY Pictures /app/Pictures
-COPY Files /app/Files
+COPY shoppingListData.txt /app
 
 # Восстановление зависимостей
 RUN dotnet restore
