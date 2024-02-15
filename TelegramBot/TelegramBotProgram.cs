@@ -29,6 +29,7 @@ namespace TelegramBot
 
                     case ("Показать список"):
                         await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        await InlineKeyboardHandler.InlineKeyboardAction(update.CallbackQuery);
                         break;
 
                     default:
@@ -37,7 +38,7 @@ namespace TelegramBot
                 }
             }
         }
-       
+
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {

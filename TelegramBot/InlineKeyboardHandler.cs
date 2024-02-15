@@ -12,20 +12,24 @@ public class InlineKeyboardHandler
         _botClient = botClient;
     }
 
-    public static async Task HandleInlineKeyboardAction(CallbackQuery callbackQuery)
+    public static async Task InlineKeyboardAction(CallbackQuery callbackQuery)
     {
         // Получаем данные обратного вызова
-        string callbackData = callbackQuery.Data;
-
-        // Обработка действий в зависимости от данных обратного вызова
-        if (callbackData.StartsWith("button_11_data"))
+        if (callbackQuery != null)
         {
-            // Извлечь текст из данных обратного вызова
-            string buttonText = callbackData.Split("_data")[0].Replace("button_", "").Replace("_", " ");
+            string callbackData = callbackQuery.Data;
+
+            // Обработка действий в зависимости от данных обратного вызова
+            if (callbackData == "button_11_data")
+            {
+                // Извлечь текст из данных обратного вызова
+                string buttonText = callbackData.Split("_data")[0].Replace("button_", "").Replace("_", " ");
             
-            // Обрабатываем действие
-            await _botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Выбрано: {buttonText}", cancellationToken: default);
+                // Обрабатываем действие
+                await _botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Выбрано: {buttonText}", cancellationToken: default);
+            }
         }
+
         // Добавьте обработку других действий по мере необходимости
     }
 }
