@@ -95,7 +95,7 @@ namespace TelegramBot
         
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
-        ////разобраться с изменениями
+        ////разобраться с изменениями или ПЕРЕМЕСТИТЬ!!!!
         {
             StringBuilder shoppingListText = new StringBuilder();
             foreach (var item in _shoppingList)
