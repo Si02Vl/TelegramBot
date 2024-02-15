@@ -13,17 +13,11 @@ namespace TelegramBot
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            //var inlineKeyboardHandler = new InlineKeyboardHandler();
-            InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
-            // if (update.CallbackQuery != null)
-            // {
-            //     CallbackQuery callbackQuery = update.CallbackQuery;
-            //     await botClient.AnswerCallbackQueryAsync(
-            //         callbackQuery.Id,
-            //         $"Received {callbackQuery.Data}");
-            // }
-            
-            
+            if (update.CallbackQuery != null)
+            {
+                InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
+            }
+
             if (update.Message != null)
             {
                 var message = update.Message.Text;

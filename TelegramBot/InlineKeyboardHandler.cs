@@ -5,13 +5,16 @@ namespace TelegramBot
 {
     public class InlineKeyboardHandler
     {
-        private ITelegramBotClient _botClient;
-        private string buttonCallbackData;
-
         public static void InlineKeyboardDataGetting(CallbackQuery callbackQuery)
         {
             var buttonCallbackData = callbackQuery.Data;
             Console.WriteLine(buttonCallbackData);
+        }
+
+        public async Task InlineKeyboardActionAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery,
+            CancellationToken cancellationToken)
+        {
+            
         }
     }
 }
