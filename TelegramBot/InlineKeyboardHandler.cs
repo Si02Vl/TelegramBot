@@ -1,35 +1,22 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace TelegramBot;
-
-public class InlineKeyboardHandler
+namespace TelegramBot
 {
-    private static ITelegramBotClient _botClient;
-
-    public InlineKeyboardHandler(ITelegramBotClient botClient)
+    public class InlineKeyboardHandler
     {
-        _botClient = botClient;
-    }
+        private ITelegramBotClient _botClient;
+        private string buttonCallbackData;
 
-    public static async Task InlineKeyboardAction(CallbackQuery callbackQuery)
-    {
-        // Получаем данные обратного вызова
-        if (callbackQuery != null)
+        public InlineKeyboardHandler(ITelegramBotClient botClient)
         {
-            string callbackData = callbackQuery.Data;
-
-            // Обработка действий в зависимости от данных обратного вызова
-            if (callbackData == "button_11_data")
-            {
-                // Извлечь текст из данных обратного вызова
-                string buttonText = callbackData.Split("_data")[0].Replace("button_", "").Replace("_", " ");
-            
-                // Обрабатываем действие
-                await _botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Выбрано: {buttonText}", cancellationToken: default);
-            }
+            _botClient = botClient;
         }
 
-        // Добавьте обработку других действий по мере необходимости
+        public void InlineKeyboardDataGetting(CallbackQuery callbackQuery)
+        {
+            var buttonCallbackData = callbackQuery.Data;
+            Console.WriteLine(buttonCallbackData);
+        }
     }
 }

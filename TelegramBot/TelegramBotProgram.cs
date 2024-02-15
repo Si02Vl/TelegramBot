@@ -2,7 +2,6 @@
 using Telegram.Bot.Types;
 using File = System.IO.File;
 
-
 namespace TelegramBot
 {
     public class TelegramBotProgram
@@ -29,7 +28,10 @@ namespace TelegramBot
 
                     case ("Показать список"):
                         await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                        await InlineKeyboardHandler.InlineKeyboardAction(update.CallbackQuery);
+                        
+                        var inlineKeyboardHandler = new InlineKeyboardHandler(botClient);
+                        if (update.CallbackQuery != null)
+                            inlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
                         break;
 
                     default:
