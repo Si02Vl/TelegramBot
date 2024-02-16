@@ -1,4 +1,7 @@
 ﻿using System.Text;
+using System;
+using System.IO;
+using System.Collections.Generic;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -8,10 +11,10 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        private readonly string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
+        private string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
         private readonly List<ShoppingList> _shoppingList = new ();
         
-        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
+        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update, //убрать лишний if null
             CancellationToken cancellationToken)
         {
             if (update.CallbackQuery != null)
@@ -23,16 +26,20 @@ namespace TelegramBot
             if (update.Message != null)
             {
                 var message = update.Message.Text;
-                var callbackData = update.CallbackQuery.Data;
-                
-                if (int.TryParse(callbackData, out int index))
+                if (update.CallbackQuery != null)
                 {
-                    if (index >= 0 && index < _shoppingList.Count)
+                    var callbackData = update.CallbackQuery.Data;
+                
+                    if (int.TryParse(callbackData, out int index))
                     {
-                        _shoppingList[index].IsBought = true;
-                        await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        if (index >= 0 && index < _shoppingList.Count)
+                        {
+                            _shoppingList[index].IsBought = true;
+                            await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        }
                     }
                 }
+
                 switch (message)
                 {
                     case ("/start"):
@@ -61,7 +68,7 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        private void WritingToFile(Update update,ITelegramBotClient botClient, CancellationToken cancellationToken) 
+        private async Task WritingToFile(Update update,ITelegramBotClient botClient, CancellationToken cancellationToken) 
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
@@ -71,11 +78,11 @@ namespace TelegramBot
                         IsBought = false
                     });
 
-            string fileContent = File.ReadAllText(_filePath);
+            string fileContent = await File.ReadAllTextAsync(_filePath, cancellationToken);
 
             foreach (var item in _shoppingList)
             {
-                string newItem = $"{item.Product}"; //- {(item.isBought ? "куплено" : "не куплено")};
+                string newItem = $"{item.Product}"; // - {(item.IsBought ? "куплено" : "не куплено")}";
                 if (!fileContent.Contains(newItem))
                 {
                     fileContent += newItem + "\n";
@@ -83,9 +90,9 @@ namespace TelegramBot
             }
             try
             {
-                File.WriteAllText(_filePath, fileContent);
+                await File.WriteAllTextAsync(_filePath, fileContent, cancellationToken);
 
-                this.UserMessageDelete(botClient, update.Message, cancellationToken);
+                await UserMessageDelete(botClient, update.Message, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -95,28 +102,22 @@ namespace TelegramBot
         
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
-        ////разобраться с изменениями или ПЕРЕМЕСТИТЬ!!!!
         {
+            ////разобраться с изменениями или ПЕРЕМЕСТИТЬ!!!!
             StringBuilder shoppingListText = new StringBuilder();
-            foreach (var item in _shoppingList)
-            {
-                string newItem = item.IsBought ? $"~~{item.Product}~~" : item.Product;
-                shoppingListText.AppendLine(newItem);
-            }
-
-            await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                $"Список покупок:\n\r{shoppingListText.ToString()}",
-                cancellationToken: cancellationToken, 
-                replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));
-            
-            Console.WriteLine("Вызван метод показа списка покупок.");
-            
             if (File.ReadAllText(_filePath) != "")
             {
+                foreach (var item in _shoppingList)
+                {
+                    string newItem = item.IsBought ? $"<del>{item.Product}</del>" : item.Product;
+                    shoppingListText.AppendLine(newItem);
+                }
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"Список покупок:\n\r" + File.ReadAllText(_filePath),
+                    $"Список покупок:\n\r{shoppingListText.ToString()}",
                     cancellationToken: cancellationToken, 
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));//тут изменения
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));
+                
+                Console.WriteLine("Вызван метод показа списка покупок.");
             }
             else
             {
