@@ -103,17 +103,10 @@ namespace TelegramBot
         private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
-            ////разобраться с изменениями или ПЕРЕМЕСТИТЬ!!!!
-            StringBuilder shoppingListText = new StringBuilder();
             if (File.ReadAllText(_filePath) != "")
             {
-                foreach (var item in _shoppingList)
-                {
-                    string newItem = item.IsBought ? $"<del>{item.Product}</del>" : item.Product;
-                    shoppingListText.AppendLine(newItem);
-                }
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"Список покупок:\n\r{shoppingListText.ToString()}",
+                    $"Список покупок:\n\r" + File.ReadAllText(_filePath),
                     cancellationToken: cancellationToken, 
                     replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));
                 
