@@ -115,7 +115,7 @@ namespace TelegramBot
             else
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"Список покупок пуст", cancellationToken: cancellationToken);
+                    $"<del>Список покупок пуст</del>", cancellationToken: cancellationToken, parseMode: ParseMode.Html);
             }
         }
 
