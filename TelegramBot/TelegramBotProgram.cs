@@ -69,7 +69,7 @@ namespace TelegramBot
                             break;
 
                         default:
-                            WritingToFile(update, botClient, cancellationToken);
+                            await WritingToFile(update, botClient, cancellationToken);
                             break;
                     }
                 }
