@@ -56,7 +56,7 @@ namespace TelegramBot
                         break;
                     
                     case ("Удалить купленное из списка"):
-                        await DeletePurchasedItems(botClient, update.Message, cancellationToken);
+                        //await DeletePurchasedItems(botClient, update.Message, cancellationToken);
                         break;
 
                     default:
@@ -144,13 +144,14 @@ namespace TelegramBot
                 cancellationToken: cancellationToken);
         }
 
-        public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
+        /*public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
             //var filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingListData.txt";
             var items = await File.ReadAllLinesAsync(_filePath); 
             
-            var button = InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery); 
+            var buttonData = message.СallbackQuery.Data;
+            var button = InlineKeyboardHandler.InlineKeyboardDataGetting(buttonData); 
             var clearButtonData = Regex.Replace(button, "_buttonData", "");
 
             for (int i = 0; i < items.Length; i++)
@@ -158,7 +159,8 @@ namespace TelegramBot
                 if (items[i].Contains("<s>"))
                 {
                     // удаляем строку
-                    items[i] = $""; 
+                    //items[i] = "";
+                    items[i] = "";
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(_filePath, updatedFileContent);
                     //удаляем сообщение и обновляем список в чате
@@ -170,6 +172,6 @@ namespace TelegramBot
                     break;
                 }
             }
-        };
+        }*/
     }
 }
