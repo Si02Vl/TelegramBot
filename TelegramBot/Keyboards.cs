@@ -29,7 +29,7 @@ public class Keyboards
 
         var buttons = lines.Select(line => new[]
         {
-            InlineKeyboardButton.WithCallbackData(line, $"button_{line.Replace(" ", "_")}_data")
+            InlineKeyboardButton.WithCallbackData(line, $"{line}_buttonData")
         }).ToArray();
         return new InlineKeyboardMarkup(buttons);
     }

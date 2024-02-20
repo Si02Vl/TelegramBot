@@ -100,7 +100,7 @@ namespace TelegramBot
             }
         }
         
-        private async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
+        public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
             if (File.ReadAllText(_filePath) != "")

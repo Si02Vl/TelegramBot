@@ -23,7 +23,7 @@ namespace TelegramBot
             var items = await File.ReadAllLinesAsync(filePath); 
             
             var button = InlineKeyboardDataGetting(callbackQuery); 
-            var clearButtonData = Regex.Replace(button, "button_|_data", "");
+            var clearButtonData = Regex.Replace(button, "_buttonData", "");
 
             bool found = false;
 
