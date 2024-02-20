@@ -13,7 +13,7 @@ namespace TelegramBot
     public class TelegramBotProgram
     {
         public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
-        private readonly List<ShoppingList> _shoppingList = new ();
+        public List<ShoppingList> _shoppingList = new ();
         
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update, //убрать лишний if null
             CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ namespace TelegramBot
                         break;
                     
                     case ("Удалить купленное из списка"):
-                        //await DeletePurchasedItems(botClient, update.Message, cancellationToken);
+                        await DeletePurchasedItems(botClient, update.Message, update.CallbackQuery, cancellationToken);
                         break;
 
                     default:
@@ -144,14 +144,13 @@ namespace TelegramBot
                 cancellationToken: cancellationToken);
         }
 
-        /*public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
+        public async Task DeletePurchasedItems(ITelegramBotClient botClient,  Message message, CallbackQuery callbackQuery,
             CancellationToken cancellationToken)
         {
-            //var filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingListData.txt";
-            var items = await File.ReadAllLinesAsync(_filePath); 
+            var items = await File.ReadAllLinesAsync(_filePath);  //дублируется с InlineKeyboardActionAsync(). Исправить
+
+            var button = InlineKeyboardHandler.InlineKeyboardDataGetting(callbackQuery); 
             
-            var buttonData = message.СallbackQuery.Data;
-            var button = InlineKeyboardHandler.InlineKeyboardDataGetting(buttonData); 
             var clearButtonData = Regex.Replace(button, "_buttonData", "");
 
             for (int i = 0; i < items.Length; i++)
@@ -159,7 +158,6 @@ namespace TelegramBot
                 if (items[i].Contains("<s>"))
                 {
                     // удаляем строку
-                    //items[i] = "";
                     items[i] = "";
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(_filePath, updatedFileContent);
@@ -172,6 +170,6 @@ namespace TelegramBot
                     break;
                 }
             }
-        }*/
+        }
     }
 }
