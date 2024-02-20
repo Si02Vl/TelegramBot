@@ -31,7 +31,7 @@ namespace TelegramBot
             {
                 if (items[i] == clearButtonData)
                 {
-                    // добавляем зачеркивание к совпавшей строке/обновляем список
+                    // зачеркиваем при совпадении
                     items[i] = $"<s>{items[i]}</s>"; 
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
