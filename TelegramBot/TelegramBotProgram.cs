@@ -149,9 +149,9 @@ namespace TelegramBot
         {
             var items = await File.ReadAllLinesAsync(_filePath);  //дублируется с InlineKeyboardActionAsync(). Исправить
 
-            var button = InlineKeyboardHandler.InlineKeyboardDataGetting(callbackQuery); 
+            //var button = InlineKeyboardHandler.InlineKeyboardDataGetting(callbackQuery); 
             
-            var clearButtonData = Regex.Replace(button, "_buttonData", "");
+            //var clearButtonData = Regex.Replace(button, "_buttonData", "");
 
             for (int i = 0; i < items.Length; i++)
             {
@@ -167,7 +167,7 @@ namespace TelegramBot
                     TelegramBotProgram bot = new TelegramBotProgram();
                     await bot.ShowShoppingListAsync(botClient, message, cancellationToken);
                     
-                    break;
+                    //break;
                 }
             }
         }
