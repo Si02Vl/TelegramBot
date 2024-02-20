@@ -6,6 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
+using System.Text.RegularExpressions;
 
 namespace TelegramBot
 {
@@ -55,7 +56,7 @@ namespace TelegramBot
                         break;
                     
                     case ("Удалить купленное из списка"):
-                        //await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        await DeletePurchasedItems(botClient, update.Message, cancellationToken);
                         break;
 
                     default:
@@ -142,6 +143,33 @@ namespace TelegramBot
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
                 cancellationToken: cancellationToken);
         }
-        
+
+        public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
+            CancellationToken cancellationToken)
+        {
+            //var filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingListData.txt";
+            var items = await File.ReadAllLinesAsync(_filePath); 
+            
+            var button = InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery); 
+            var clearButtonData = Regex.Replace(button, "_buttonData", "");
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].Contains("<s>"))
+                {
+                    // удаляем строку
+                    items[i] = $""; 
+                    var updatedFileContent = string.Join(Environment.NewLine, items);
+                    await File.WriteAllTextAsync(_filePath, updatedFileContent);
+                    //удаляем сообщение и обновляем список в чате
+                    await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                    
+                    TelegramBotProgram bot = new TelegramBotProgram();
+                    await bot.ShowShoppingListAsync(botClient, message, cancellationToken);
+                    
+                    break;
+                }
+            }
+        };
     }
 }
