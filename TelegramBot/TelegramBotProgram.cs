@@ -106,7 +106,7 @@ namespace TelegramBot
             if (File.ReadAllText(_filePath) != "")
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"Список покупок:\n\r" + File.ReadAllText(_filePath),
+                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText(_filePath),
                     cancellationToken: cancellationToken, 
                     replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList), 
                     parseMode: ParseMode.Html);

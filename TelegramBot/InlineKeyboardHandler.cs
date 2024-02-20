@@ -37,7 +37,7 @@ namespace TelegramBot
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
                     break;
                 }
-
+            //добавить удаление изначального списка и отправку нового с зачеркнутым текстом
             }
         }
     }
