@@ -147,29 +147,9 @@ namespace TelegramBot
         public async Task DeletePurchasedItems(ITelegramBotClient botClient,  Message message, CallbackQuery callbackQuery,
             CancellationToken cancellationToken)
         {
-            var items = await File.ReadAllLinesAsync(_filePath);  //дублируется с InlineKeyboardActionAsync(). Исправить
-
-            //var button = InlineKeyboardHandler.InlineKeyboardDataGetting(callbackQuery); 
-            
-            //var clearButtonData = Regex.Replace(button, "_buttonData", "");
-
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i].Contains("<s>"))
-                {
-                    // удаляем строку
-                    items[i] = "";
-                    var updatedFileContent = string.Join(Environment.NewLine, items);
-                    await File.WriteAllTextAsync(_filePath, updatedFileContent);
-                    //удаляем сообщение и обновляем список в чате
-                    await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
-                    
-                    TelegramBotProgram bot = new TelegramBotProgram();
-                    await bot.ShowShoppingListAsync(botClient, message, cancellationToken);
-                    
-                    //break;
-                }
-            }
+            var lines = File.ReadAllLines(_filePath).Where(l => !l.Contains("<s>")).ToArray();
+            File.WriteAllLines(_filePath, lines);
+            ShowShoppingListAsync(botClient, message, cancellationToken);
         }
     }
 }
