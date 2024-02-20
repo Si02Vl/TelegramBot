@@ -11,7 +11,7 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        private string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
+        public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
         private readonly List<ShoppingList> _shoppingList = new ();
         
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update, //убрать лишний if null
@@ -22,7 +22,7 @@ namespace TelegramBot
                 InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
                 await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient, chatId: update.CallbackQuery.From.Id);
             }
-
+            //выводим список по нажатию inline кнопки             
             if (update.Message != null)
             {
                 var message = update.Message.Text;
