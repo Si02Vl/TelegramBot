@@ -19,20 +19,28 @@ namespace TelegramBot
         //нужно сравнить button_***_data из callbackquery (оставив ***) с текстом в файле
         public static async Task InlineKeyboardActionAsync(CallbackQuery callbackQuery, ITelegramBotClient botClient, long chatId)
         {
-            var file = await File.ReadAllTextAsync($"C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingListData.txt"); //читаем файл
-            var button = InlineKeyboardDataGetting(callbackQuery); //передаем button_***_data в этот метод
-            var clearButtonData = Regex.Replace(button, "button_|_data", "");//создаем новую переменную, удаляя из button_***_data лишнее
+            var filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/shoppingListData.txt";
+            var file = await File.ReadAllTextAsync(filePath); 
+            var button = InlineKeyboardDataGetting(callbackQuery); 
+            var clearButtonData = Regex.Replace(button, "button_|_data", "");
 
             var lines = file.Split(Environment.NewLine);
-            foreach (var i in lines)//проверяем совпадает ли button_***_data с текстом в файле
+    
+            for (int i = 0; i < lines.Length; i++)
             {
-                if (lines.Contains(clearButtonData))
+                if (lines[i].Contains(clearButtonData))
                 {
-
+                    // добавляем зачеркивание к строке
+                    lines[i] = $"<s>{lines[i]}</s>";
+                    // отправляем сообщение
+                    string messageToChat = "Нажатие: " + clearButtonData;
+                    await botClient.SendTextMessageAsync(chatId, messageToChat, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                    break;
                 }
             }
-            //string messageToChat = "Нажатие: " + clearButtonData;
-            //await botClient.SendTextMessageAsync(chatId, messageToChat);
+
+            var updatedFileContent = string.Join(Environment.NewLine, lines);
+            await File.WriteAllTextAsync(filePath, updatedFileContent);
         }
     }
 }

@@ -82,7 +82,7 @@ namespace TelegramBot
 
             foreach (var item in _shoppingList)
             {
-                string newItem = $"{item.Product}"; // - {(item.IsBought ? "куплено" : "не куплено")}";
+                string newItem = $"{item.Product}";
                 if (!fileContent.Contains(newItem))
                 {
                     fileContent += newItem + "\n";
@@ -108,14 +108,15 @@ namespace TelegramBot
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
                     $"Список покупок:\n\r" + File.ReadAllText(_filePath),
                     cancellationToken: cancellationToken, 
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList));
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList), 
+                    parseMode: ParseMode.Html);
                 
                 Console.WriteLine("Вызван метод показа списка покупок.");
             }
             else
             {
                 await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"<del>Список покупок пуст</del>", cancellationToken: cancellationToken, parseMode: ParseMode.Html);
+                    $"Список покупок пуст", cancellationToken: cancellationToken);
             }
         }
 
