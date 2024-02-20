@@ -31,12 +31,8 @@ namespace TelegramBot
             {
                 if (items[i] == clearButtonData)
                 {
-                    // отправляем сообщение
-                    string messageToChat = "Нажатие: " + clearButtonData;
-                    await botClient.SendTextMessageAsync(chatId, messageToChat, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
-                    // добавляем зачеркивание только к совпавшей строке
+                    // добавляем зачеркивание к совпавшей строке
                     items[i] = $"<s>{items[i]}</s>"; 
-                    //found = true;
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
                     break;
