@@ -31,14 +31,18 @@ namespace TelegramBot
             {
                 if (items[i] == clearButtonData)
                 {
-                    // добавляем зачеркивание к совпавшей строке
+                    // добавляем зачеркивание к совпавшей строке/обновляем список
                     items[i] = $"<s>{items[i]}</s>"; 
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
+                    //удаляем сообщение и обновляем список в чате
+                    await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);
+                    
+                    TelegramBotProgram bot = new TelegramBotProgram();
+                    await bot.ShowShoppingListAsync(botClient, callbackQuery.Message, CancellationToken.None);
+                    
                     break;
                 }
-            //добавить удаление изначального списка и отправку нового с зачеркнутым текстом
-            
             }
         }
     }

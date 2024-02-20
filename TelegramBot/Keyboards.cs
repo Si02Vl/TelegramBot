@@ -15,7 +15,8 @@ public class Keyboards
             new[]
             {
                 new KeyboardButton("Очистить список"),
-                new KeyboardButton("Показать список")
+                new KeyboardButton("Показать список"),
+                new KeyboardButton("Удалить купленное из списка")
             }
         });
         return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие на клавиатуре " +

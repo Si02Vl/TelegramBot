@@ -53,6 +53,10 @@ namespace TelegramBot
                     case ("Показать список"):
                         await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
                         break;
+                    
+                    case ("Удалить купленное из списка"):
+                        //await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        break;
 
                     default:
                         WritingToFile(update, botClient, cancellationToken);
