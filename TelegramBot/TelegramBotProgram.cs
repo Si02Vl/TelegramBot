@@ -105,7 +105,8 @@ namespace TelegramBot
         {
             if (File.ReadAllText(_filePath) != "")
             {
-                await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
+                await botClient.SendTextMessageAsync(
+                    updateMessage.Chat.Id,
                     $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText(_filePath),
                     cancellationToken: cancellationToken, 
                     replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList), 
@@ -115,8 +116,10 @@ namespace TelegramBot
             }
             else
             {
-                await botClient.SendTextMessageAsync(updateMessage.Chat.Id,
-                    $"Список покупок пуст", cancellationToken: cancellationToken);
+                await botClient.SendTextMessageAsync(
+                    updateMessage.Chat.Id,
+                    $"Список покупок пуст", 
+                    cancellationToken: cancellationToken);
             }
         }
 
@@ -128,11 +131,13 @@ namespace TelegramBot
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
         }
+
         private async Task UserMessageDelete(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
                 cancellationToken: cancellationToken);
         }
+        
     }
 }

@@ -20,7 +20,8 @@ public class Keyboards
         });
         return botClient.SendTextMessageAsync(message.Chat.Id, "Выберите действие на клавиатуре " +
                                                                "или введите покупки отдельными сообщениями.",
-            replyMarkup: keyboard, cancellationToken: cancellationToken);
+            replyMarkup: keyboard, 
+            cancellationToken: cancellationToken);
     }
     
     public static InlineKeyboardMarkup CreateInlineKeyboardFromShoppingListFile(string filePath, List<ShoppingList> shoppingList)
@@ -29,7 +30,7 @@ public class Keyboards
 
         var buttons = lines.Select(line => new[]
         {
-            InlineKeyboardButton.WithCallbackData(line, $"{line}_buttonData")
+            InlineKeyboardButton.WithCallbackData(line.Replace("<s>", "").Replace("</s>", ""), $"{line}_buttonData")
         }).ToArray();
         return new InlineKeyboardMarkup(buttons);
     }
