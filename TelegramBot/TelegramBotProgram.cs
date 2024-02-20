@@ -15,13 +15,14 @@ namespace TelegramBot
         public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
         public List<ShoppingList> _shoppingList = new ();
         
-        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update, //убрать лишний if null
+        public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update, 
             CancellationToken cancellationToken)
         {
             if (update.CallbackQuery != null)
             {
                 InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
-                await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient, chatId: update.CallbackQuery.From.Id);
+                await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient, 
+                    chatId: update.CallbackQuery.From.Id);
             }
             //выводим список по нажатию inline кнопки             
             if (update.Message != null)
@@ -40,7 +41,6 @@ namespace TelegramBot
                         }
                     }
                 }
-
                 switch (message)
                 {
                     case ("/start"):
@@ -73,7 +73,7 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        private async Task WritingToFile(Update update,ITelegramBotClient botClient, CancellationToken cancellationToken) 
+        private async Task WritingToFile(Update update, ITelegramBotClient botClient, CancellationToken cancellationToken) 
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
@@ -144,12 +144,12 @@ namespace TelegramBot
                 cancellationToken: cancellationToken);
         }
 
-        public async Task DeletePurchasedItems(ITelegramBotClient botClient,  Message message, CallbackQuery callbackQuery,
-            CancellationToken cancellationToken)
+        public async Task DeletePurchasedItems(ITelegramBotClient botClient,  Message message, 
+            CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
             var lines = File.ReadAllLines(_filePath).Where(l => !l.Contains("<s>")).ToArray();
             File.WriteAllLines(_filePath, lines);
-            ShowShoppingListAsync(botClient, message, cancellationToken);
+            await ShowShoppingListAsync(botClient, message, cancellationToken);
         }
     }
 }
