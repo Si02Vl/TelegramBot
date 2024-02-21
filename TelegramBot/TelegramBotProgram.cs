@@ -1,25 +1,14 @@
-﻿using System.Text;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.Threading.Channels;
-
 
 namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        //public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,
-            //"DataFile.txt");
-        public string _filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/DataFile.txt";    
-        public string _folderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data";
+        public string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/DataFile.txt";    
+        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
         
         public List<ShoppingList> _shoppingList = new();
        
@@ -33,13 +22,12 @@ namespace TelegramBot
                     chatId: update.CallbackQuery.From.Id);
                 
             }
-
-            //выводим список по нажатию inline кнопки             
+            
             if (update.Message != null)
             {
                 var message = update.Message.Text;
                 var chatOrGroupId = update.Message.Chat.Id;
-                IsDataFileExist(_folderPath, chatOrGroupId);
+                IsDataFileExist(dataFolderPath, chatOrGroupId);
                 
                 switch (message)
                 {
@@ -61,7 +49,7 @@ namespace TelegramBot
                         break;
 
                     default:
-                        await WritingToFile(update, botClient, cancellationToken);
+                        await WritingToFile(update, botClient, cancellationToken, chatOrGroupId);
                         break;
                 }
             }
@@ -75,7 +63,7 @@ namespace TelegramBot
         }
 
         private async Task WritingToFile(Update update, ITelegramBotClient botClient,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken, long chatOrGroupId)
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
@@ -85,20 +73,21 @@ namespace TelegramBot
                         IsBought = false
                     });
 
-            string fileContent = await File.ReadAllTextAsync(_filePath, cancellationToken);
-
+            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/" + $"{chatOrGroupId}_DataFile.txt";
+            string dataFile = await File.ReadAllTextAsync(filePath, cancellationToken);
+ 
             foreach (var item in _shoppingList)
             {
                 string newItem = $"{item.Product}";
-                if (!fileContent.Contains(newItem))
+                if (!dataFile.Contains(newItem))
                 {
-                    fileContent += newItem + "\n";
+                    dataFile += newItem + "\n";
                 }
             }
 
             try
             {
-                await File.WriteAllTextAsync(_filePath, fileContent, cancellationToken);
+                await File.WriteAllTextAsync(filePath, dataFile, cancellationToken);
 
                 await UserMessageDelete(botClient, update.Message, cancellationToken);
             }
@@ -108,16 +97,17 @@ namespace TelegramBot
             }
         }
 
-        public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
+        public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage, ///////////////читает файл по глобальной переменной, переделать
             CancellationToken cancellationToken)
         {
-            if (File.ReadAllText(_filePath) != "")
+            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/" + $"{chatOrGroupId}_DataFile.txt";
+            if (File.ReadAllText(filePath) != "")
             {
                 await botClient.SendTextMessageAsync(
                     updateMessage.Chat.Id,
-                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText(_filePath),
+                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText(filePath),
                     cancellationToken: cancellationToken,
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList),
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(filePath, _shoppingList),
                     parseMode: ParseMode.Html);
 
                 Console.WriteLine("Вызван метод показа списка покупок.");
@@ -135,7 +125,7 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод очистки списка.");
-            File.WriteAllText(_filePath, "");
+            File.WriteAllText(filePath, "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
         }
@@ -150,19 +140,19 @@ namespace TelegramBot
         public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
             CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
-            var lines = File.ReadAllLines(_filePath).Where(l => !l.Contains("<s>")).ToArray();
-            File.WriteAllLines(_filePath, lines);
+            var lines = File.ReadAllLines(filePath).Where(l => !l.Contains("<s>")).ToArray();
+            File.WriteAllLines(filePath, lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
         }
 
-        public void IsDataFileExist(string folderPath, long chatOrGroupId)
+        public void IsDataFileExist(string dataFolderPath, long chatOrGroupId)
         {
             string fileName = $"{chatOrGroupId}_DataFile.txt";
-            string[] files = Directory.GetFiles(folderPath);
+            string[] files = Directory.GetFiles(dataFolderPath);
     
             if (!files.Contains(fileName))
             {
-                File.Create(Path.Combine(folderPath, fileName)).Close();
+                File.Create(Path.Combine(dataFolderPath, fileName)).Close();
             }
             else
             {
