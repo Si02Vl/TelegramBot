@@ -22,7 +22,7 @@ namespace TelegramBot
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            if (update.Message != null && IsGroupChat(update.Message.Chat.Type))
+            if (update.Message != null)
             {
                 if (update.CallbackQuery != null)
                 {
@@ -162,11 +162,6 @@ namespace TelegramBot
             var lines = File.ReadAllLines(_filePath).Where(l => !l.Contains("<s>")).ToArray();
             File.WriteAllLines(_filePath, lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
-        }
-
-        public bool IsGroupChat(ChatType chatType)
-        {
-            return chatType is ChatType.Group or ChatType.Supergroup;
         }
     }
 }
