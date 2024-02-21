@@ -22,58 +22,55 @@ namespace TelegramBot
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            //if (update.Message != null)
-            //{
+            if (update.CallbackQuery != null)
+            {
+                InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
+                await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient,
+                    chatId: update.CallbackQuery.From.Id);
+            }
+
+            //выводим список по нажатию inline кнопки             
+            if (update.Message != null)
+            {
+                var message = update.Message.Text;
                 if (update.CallbackQuery != null)
                 {
-                    InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
-                    await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient,
-                        chatId: update.CallbackQuery.From.Id);
-                }
+                    var callbackData = update.CallbackQuery.Data;
 
-                //выводим список по нажатию inline кнопки             
-                if (update.Message != null)
-                {
-                    var message = update.Message.Text;
-                    if (update.CallbackQuery != null)
+                    if (int.TryParse(callbackData, out int index))
                     {
-                        var callbackData = update.CallbackQuery.Data;
-
-                        if (int.TryParse(callbackData, out int index))
+                        if (index >= 0 && index < _shoppingList.Count)
                         {
-                            if (index >= 0 && index < _shoppingList.Count)
-                            {
-                                _shoppingList[index].IsBought = true;
-                                await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                            }
+                            _shoppingList[index].IsBought = true;
+                            await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
                         }
                     }
-
-                    switch (message)
-                    {
-                        case ("/start"):
-                            await Keyboards.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
-                            break;
-
-                        case ("Очистить список"):
-                            await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
-                            break;
-
-                        case ("Показать список"):
-                            await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                            break;
-
-                        case ("Удалить купленное из списка"):
-                            await DeletePurchasedItems(botClient, update.Message, update.CallbackQuery,
-                                cancellationToken);
-                            break;
-
-                        default:
-                            await WritingToFile(update, botClient, cancellationToken);
-                            break;
-                    }
                 }
-            //}
+
+                switch (message)
+                {
+                    case ("/start"):
+                        await Keyboards.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
+                        break;
+
+                    case ("Очистить список"):
+                        await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
+                        break;
+
+                    case ("Показать список"):
+                        await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        break;
+
+                    case ("Удалить купленное из списка"):
+                        await DeletePurchasedItems(botClient, update.Message, update.CallbackQuery,
+                            cancellationToken);
+                        break;
+
+                    default:
+                        await WritingToFile(update, botClient, cancellationToken);
+                        break;
+                }
+            }
         }
 
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
