@@ -2,12 +2,14 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
 
 
 namespace TelegramBot
@@ -15,10 +17,10 @@ namespace TelegramBot
     public class TelegramBotProgram
     {
         public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,
-            "shoppingListData.txt");
+            "DataFile.txt");
 
         public List<ShoppingList> _shoppingList = new();
-
+       
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
@@ -27,26 +29,17 @@ namespace TelegramBot
                 InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
                 await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient,
                     chatId: update.CallbackQuery.From.Id);
+                
             }
 
             //выводим список по нажатию inline кнопки             
             if (update.Message != null)
             {
                 var message = update.Message.Text;
-                if (update.CallbackQuery != null)
-                {
-                    var callbackData = update.CallbackQuery.Data;
-
-                    if (int.TryParse(callbackData, out int index))
-                    {
-                        if (index >= 0 && index < _shoppingList.Count)
-                        {
-                            _shoppingList[index].IsBought = true;
-                            await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                        }
-                    }
-                }
-
+                var chatOrGroupId = update.Message.Chat.Id;
+                Console.WriteLine(chatOrGroupId + " " + message);
+                IsDataFileExist(_filePath, chatOrGroupId);
+                
                 switch (message)
                 {
                     case ("/start"):
@@ -159,6 +152,11 @@ namespace TelegramBot
             var lines = File.ReadAllLines(_filePath).Where(l => !l.Contains("<s>")).ToArray();
             File.WriteAllLines(_filePath, lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
+        }
+
+        public void IsDataFileExist(string _filePath, long chatOrGroupId)
+        {
+            if (File.Exists(_filePath)) File.Create($"{_filePath}_{chatOrGroupId}.txt").Close();
         }
     }
 }

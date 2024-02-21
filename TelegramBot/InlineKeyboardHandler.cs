@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using File = System.IO.File;
 using System.Text.RegularExpressions;
@@ -19,13 +18,11 @@ namespace TelegramBot
         //нужно сравнить button_***_data из callbackquery (оставив ***) с текстом в файле
         public static async Task InlineKeyboardActionAsync(CallbackQuery callbackQuery, ITelegramBotClient botClient, long chatId)
         {
-            var filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
+            var filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "DataFile.txt");
             var items = await File.ReadAllLinesAsync(filePath); 
             
             var button = InlineKeyboardDataGetting(callbackQuery); 
             var clearButtonData = Regex.Replace(button, "_buttonData", "");
-
-            bool found = false;
 
             for (int i = 0; i < items.Length; i++)
             {
@@ -35,10 +32,10 @@ namespace TelegramBot
                     items[i] = $"<s>{items[i]}</s>"; 
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
-                    //удаляем сообщение и обновляем список в чате
+                   //удаляем сообщение и обновляем список в чате
                     await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);
                     
-                    TelegramBotProgram bot = new TelegramBotProgram();
+                    var bot = new TelegramBotProgram();
                     await bot.ShowShoppingListAsync(botClient, callbackQuery.Message, CancellationToken.None);
                     
                     break;
