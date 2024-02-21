@@ -22,8 +22,8 @@ namespace TelegramBot
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            if (update.Message != null)
-            {
+            //if (update.Message != null)
+            //{
                 if (update.CallbackQuery != null)
                 {
                     InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
@@ -73,7 +73,7 @@ namespace TelegramBot
                             break;
                     }
                 }
-            }
+            //}
         }
 
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
