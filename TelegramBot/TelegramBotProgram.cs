@@ -16,9 +16,11 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,
-            "DataFile.txt");
-
+        //public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,
+            //"DataFile.txt");
+        public string _filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/DataFile.txt";    
+        public string _folderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data";
+        
         public List<ShoppingList> _shoppingList = new();
        
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -37,8 +39,7 @@ namespace TelegramBot
             {
                 var message = update.Message.Text;
                 var chatOrGroupId = update.Message.Chat.Id;
-                Console.WriteLine(chatOrGroupId + " " + message);
-                IsDataFileExist(_filePath, chatOrGroupId);
+                IsDataFileExist(_folderPath, chatOrGroupId);
                 
                 switch (message)
                 {
@@ -154,9 +155,19 @@ namespace TelegramBot
             await ShowShoppingListAsync(botClient, message, cancellationToken);
         }
 
-        public void IsDataFileExist(string _filePath, long chatOrGroupId)
+        public void IsDataFileExist(string folderPath, long chatOrGroupId)
         {
-            if (File.Exists(_filePath)) File.Create($"{_filePath}_{chatOrGroupId}.txt").Close();
+            string fileName = $"{chatOrGroupId}_DataFile.txt";
+            string[] files = Directory.GetFiles(folderPath);
+    
+            if (!files.Contains(fileName))
+            {
+                File.Create(Path.Combine(folderPath, fileName)).Close();
+            }
+            else
+            {
+                Console.WriteLine("Файл существует");
+            }
         }
     }
 }
