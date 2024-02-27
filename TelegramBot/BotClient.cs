@@ -7,7 +7,7 @@ public static class BotClient
 {
     static async Task Main()
     {
-        var botToken = "6958296449:AAFdDLvwL2sxEH4GU-Vo0wj-JsQOb6BDVQw";
+        var botToken = "7064515716:AAFTEbS60b5WLHLZtjR6XLUeUiWfVo3oH_A";
         var botClient = new TelegramBotClient(botToken);
 
         var bot = new TelegramBotProgram();

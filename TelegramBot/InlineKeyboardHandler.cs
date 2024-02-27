@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using File = System.IO.File;
 using System.Text.RegularExpressions;
@@ -10,44 +9,37 @@ namespace TelegramBot
     public class InlineKeyboardHandler
     {
         //получаем button_***_data
-        public static string InlineKeyboardDataGetting(CallbackQuery callbackQuery, Update update)
+        public static string InlineKeyboardDataGetting(CallbackQuery callbackQuery)
         {
-            if (update.Message != null && IsGroupChat(update.Message.Chat.Type))
-            {
-                var buttonCallbackData = callbackQuery.Data;
-                return buttonCallbackData;
-            }
+            var buttonCallbackData = callbackQuery.Data;
+            return buttonCallbackData;
         }
 
         //нужно сравнить button_***_data из callbackquery (оставив ***) с текстом в файле
-        public static async Task InlineKeyboardActionAsync(CallbackQuery callbackQuery, ITelegramBotClient botClient, long chatId, Update update)
+        public static async Task InlineKeyboardActionAsync(CallbackQuery callbackQuery, ITelegramBotClient botClient, 
+            long chatId)
         {
-            if (update.Message != null && IsGroupChat(update.Message.Chat.Type))
-            {
-                var filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "shoppingListData.txt");
-                var items = await File.ReadAllLinesAsync(filePath); 
+            var filePath = $"C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
+            var items = await File.ReadAllLinesAsync(filePath); 
             
-                var button = InlineKeyboardDataGetting(callbackQuery); 
-                var clearButtonData = Regex.Replace(button, "_buttonData", "");
+            var button = InlineKeyboardDataGetting(callbackQuery); 
+            var clearButtonData = Regex.Replace(button, "_buttonData", "");
 
-                bool found = false;
-
-                for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i] == clearButtonData)
                 {
-                    if (items[i] == clearButtonData)
-                    {
-                        // зачеркиваем при совпадении
-                        items[i] = $"<s>{items[i]}</s>"; 
-                        var updatedFileContent = string.Join(Environment.NewLine, items);
-                        await File.WriteAllTextAsync(filePath, updatedFileContent);
-                        //удаляем сообщение и обновляем список в чате
-                        await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);
+                    // зачеркиваем при совпадении
+                    items[i] = $"<s>{items[i]}</s>"; 
+                    var updatedFileContent = string.Join(Environment.NewLine, items);
+                    await File.WriteAllTextAsync(filePath, updatedFileContent);
+                   //удаляем сообщение и обновляем список в чате
+                    await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);
                     
-                        TelegramBotProgram bot = new TelegramBotProgram();
-                        await bot.ShowShoppingListAsync(botClient, callbackQuery.Message, CancellationToken.None);
+                    var bot = new TelegramBotProgram();
+                    await bot.ShowShoppingListAsync(botClient, callbackQuery.Message, CancellationToken.None);
                     
-                        break;
-                    }
+                    break;
                 }
             }
         }

@@ -1,113 +1,90 @@
-﻿using System.Text;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-
 
 namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string _filePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,
-            "shoppingListData.txt");
-
-        public List<ShoppingList> _shoppingList = new();
+        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        public List<ShoppingList> shoppingList = new();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
             CancellationToken cancellationToken)
         {
-            if (update.Message != null && IsGroupChat(update.Message.Chat.Type))
+            if (update.CallbackQuery != null)
             {
-                if (update.CallbackQuery != null)
+                InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
+                await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient,
+                    chatId: update.CallbackQuery.From.Id);
+            }
+
+            if (update.Message != null)
+            {
+                var message = update.Message.Text;
+                IsDataFileExistOrCreate(update);
+
+                switch (message)
                 {
-                    InlineKeyboardHandler.InlineKeyboardDataGetting(update.CallbackQuery);
-                    await InlineKeyboardHandler.InlineKeyboardActionAsync(update.CallbackQuery, botClient,
-                        chatId: update.CallbackQuery.From.Id);
-                }
+                    case ("/start"):
+                        await Keyboards.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
+                        break;
 
-                //выводим список по нажатию inline кнопки             
-                if (update.Message != null)
-                {
-                    var message = update.Message.Text;
-                    if (update.CallbackQuery != null)
-                    {
-                        var callbackData = update.CallbackQuery.Data;
+                    case ("Очистить список"):
+                        await ClearShoppingListAsync(botClient, update, update.Message, cancellationToken);
+                        break;
 
-                        if (int.TryParse(callbackData, out int index))
-                        {
-                            if (index >= 0 && index < _shoppingList.Count)
-                            {
-                                _shoppingList[index].IsBought = true;
-                                await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                            }
-                        }
-                    }
+                    case ("Показать список"):
+                        await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
+                        break;
 
-                    switch (message)
-                    {
-                        case ("/start"):
-                            await Keyboards.CreateChatKeyboardAsync(botClient, update.Message, cancellationToken);
-                            break;
+                    case ("Удалить купленное из списка"):
+                        await DeletePurchasedItems(botClient, update.Message, update.CallbackQuery,
+                            cancellationToken);
+                        break;
 
-                        case ("Очистить список"):
-                            await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
-                            break;
-
-                        case ("Показать список"):
-                            await ShowShoppingListAsync(botClient, update.Message, cancellationToken);
-                            break;
-
-                        case ("Удалить купленное из списка"):
-                            await DeletePurchasedItems(botClient, update.Message, update.CallbackQuery,
-                                cancellationToken);
-                            break;
-
-                        default:
-                            await WritingToFile(update, botClient, cancellationToken);
-                            break;
-                    }
+                    default:
+                        await WritingToFile(update, botClient, cancellationToken, update.Message.Chat.Id);
+                        break;
                 }
             }
-        }
+        } // (ОК!)
 
         public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {
             Console.WriteLine(exception.Message);
             return Task.CompletedTask;
-        }
+        } //для обработки ошибок (ОК!)
 
         private async Task WritingToFile(Update update, ITelegramBotClient botClient,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken, long chatOrGroupId)
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
-                    _shoppingList.Add(new ShoppingList
+                    shoppingList.Add(new ShoppingList
                     {
                         Product = update.Message.Text,
                         IsBought = false
                     });
 
-            string fileContent = await File.ReadAllTextAsync(_filePath, cancellationToken);
+            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
+                cancellationToken);
 
-            foreach (var item in _shoppingList)
+            foreach (var item in shoppingList)
             {
                 string newItem = $"{item.Product}";
-                if (!fileContent.Contains(newItem))
+                if (!dataFile.Contains(newItem))
                 {
-                    fileContent += newItem + "\n";
+                    dataFile += newItem + "\n";
                 }
             }
 
             try
             {
-                await File.WriteAllTextAsync(_filePath, fileContent, cancellationToken);
+                await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile,
+                    cancellationToken);
 
                 await UserMessageDelete(botClient, update.Message, cancellationToken);
             }
@@ -115,18 +92,19 @@ namespace TelegramBot
             {
                 Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
             }
-        }
+        } //запись в файл (OK!) но разобраться с {dataFolderPath}{update.Message.Chat.Id}
 
         public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
-            if (File.ReadAllText(_filePath) != "")
+            if (File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt") != "")
             {
-                await botClient.SendTextMessageAsync(
+                await botClient.SendTextMessageAsync( 
                     updateMessage.Chat.Id,
-                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText(_filePath),
+                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt"),
                     cancellationToken: cancellationToken,
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(_filePath, _shoppingList),
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt",
+                        shoppingList),
                     parseMode: ParseMode.Html);
 
                 Console.WriteLine("Вызван метод показа списка покупок.");
@@ -138,35 +116,46 @@ namespace TelegramBot
                     $"Список покупок пуст",
                     cancellationToken: cancellationToken);
             }
-        }
+        } //вывод списка (OK!)
 
-        private async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
+        private async Task ClearShoppingListAsync(ITelegramBotClient botClient, Update update, Message message,
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод очистки списка.");
-            File.WriteAllText(_filePath, "");
+            File.WriteAllText($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
-        }
+        } //очистка файла (OK!) но разобраться с {dataFolderPath}{update.Message.Chat.Id}
 
         private async Task UserMessageDelete(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
         {
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId,
                 cancellationToken: cancellationToken);
-        }
+        } //удаление сообщений в чате (ОК!)
 
         public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
             CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
-            var lines = File.ReadAllLines(_filePath).Where(l => !l.Contains("<s>")).ToArray();
-            File.WriteAllLines(_filePath, lines);
+            var lines = File.ReadAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt").Where(l => !l.Contains("<s>")).ToArray();
+            File.WriteAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt", lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
-        }
+        } //в классе обработчика клавиатер не правильный адрес
 
-        public bool IsGroupChat(ChatType chatType)
+        public void IsDataFileExistOrCreate(Update update)
         {
-            return chatType is ChatType.Group or ChatType.Supergroup;
-        }
+            string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
+            string[] files = Directory.GetFiles(dataFolderPath);
+
+            if (files.Contains(fileName))
+            {
+                File.Create(Path.Combine(dataFolderPath, fileName)).Close();
+                Console.WriteLine("New Data File Created");
+            }
+            else
+            {
+                Console.WriteLine("The File Exists");
+            }
+        } // проверка на существование файла (OK!)
     }
 }
