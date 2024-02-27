@@ -63,7 +63,7 @@ namespace TelegramBot
         //(или избавиться от класса и писать в отдельные файлы)
         //или задать в классе поле chatId и по этому полю сортировать в файлы
         private async Task WritingToFile(Update update, ITelegramBotClient botClient, 
-            CancellationToken cancellationToken, long chatOrGroupId)
+            CancellationToken cancellationToken, long chatOrGroupId) //long chatOrGroupId не нужен???
         {
             if (update.Message != null)
                 if (update.Message.Text != null)
