@@ -77,7 +77,7 @@ namespace TelegramBot
             string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
                 cancellationToken);
 
-            foreach (var item in shoppingList)
+            foreach (var item in shoppingList) // тут все ок
             {
                 string newItem = $"{item.Product}";
                 string chatId = $"{item.ChatId}";
@@ -89,10 +89,12 @@ namespace TelegramBot
             }
             try
             { // нужен метод if чтобы по полям экземпляра, писало в соответствующий файл
-                if(ShoppingList.ChatId == update.Message.Chat.Id) //ТУТ!!!!!!!
+                if(ShoppingList.update.Message.Chat.Id == update.Message.Chat.Id) //ТУТ!!!!!!!
+                
                 {await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
                     cancellationToken);}
                 await UserMessageDelete(botClient, update.Message, cancellationToken); //тут всё ок
+                
             }
             catch (Exception ex)
             {
