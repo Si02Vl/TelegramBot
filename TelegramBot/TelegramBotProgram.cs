@@ -87,10 +87,9 @@ namespace TelegramBot
                     dataFile += $"{newItem} : ChatID = {chatId}"+"\n";
                 }
             }
-
             try
             {
-                await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile,
+                await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
                     cancellationToken);
 
                 await UserMessageDelete(botClient, update.Message, cancellationToken);
