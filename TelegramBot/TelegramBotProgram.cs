@@ -7,8 +7,7 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/DataFile.txt";    
-        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        public string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";    
         
         public List<ShoppingList> _shoppingList = new();
        
@@ -26,8 +25,8 @@ namespace TelegramBot
             if (update.Message != null)
             {
                 var message = update.Message.Text;
-                var chatOrGroupId = update.Message.Chat.Id;
-                IsDataFileExist(dataFolderPath, chatOrGroupId);
+                //var chatOrGroupId = update.Message.Chat.Id;
+                IsDataFileExistOrCreate(update);
                 
                 switch (message)
                 {
@@ -36,7 +35,7 @@ namespace TelegramBot
                         break;
 
                     case ("Очистить список"):
-                        await ClearShoppingListAsync(botClient, update.Message, cancellationToken);
+                        await ClearShoppingListAsync(botClient, update, update.Message, cancellationToken);
                         break;
 
                     case ("Показать список"):
@@ -49,7 +48,7 @@ namespace TelegramBot
                         break;
 
                     default:
-                        await WritingToFile(update, botClient, cancellationToken, chatOrGroupId);
+                        await WritingToFile(update, botClient, cancellationToken, update.Message.Chat.Id);
                         break;
                 }
             }
@@ -73,8 +72,8 @@ namespace TelegramBot
                         IsBought = false
                     });
 
-            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/" + $"{chatOrGroupId}_DataFile.txt";
-            string dataFile = await File.ReadAllTextAsync(filePath, cancellationToken);
+            //string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/" + $"{chatOrGroupId}_DataFile.txt";
+            string dataFile = await File.ReadAllTextAsync($"{filePath}{update.Message.Chat.Id}_DataFile.txt", cancellationToken);
  
             foreach (var item in _shoppingList)
             {
@@ -87,7 +86,7 @@ namespace TelegramBot
 
             try
             {
-                await File.WriteAllTextAsync(filePath, dataFile, cancellationToken);
+                await File.WriteAllTextAsync($"{filePath}{update.Message.Chat.Id}_DataFile.txt", dataFile, cancellationToken);
 
                 await UserMessageDelete(botClient, update.Message, cancellationToken);
             }
@@ -100,14 +99,13 @@ namespace TelegramBot
         public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage, ///////////////читает файл по глобальной переменной, переделать
             CancellationToken cancellationToken)
         {
-            string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/" + $"{chatOrGroupId}_DataFile.txt";
-            if (File.ReadAllText(filePath) != "")
+            if (File.ReadAllText($"{filePath}{updateMessage.Chat.Id}_DataFile.txt") != "")
             {
                 await botClient.SendTextMessageAsync(
                     updateMessage.Chat.Id,
-                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText(filePath),
+                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText($"{filePath}_DataFile.txt"),
                     cancellationToken: cancellationToken,
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile(filePath, _shoppingList),
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{filePath}_DataFile.txt", _shoppingList),
                     parseMode: ParseMode.Html);
 
                 Console.WriteLine("Вызван метод показа списка покупок.");
@@ -121,11 +119,11 @@ namespace TelegramBot
             }
         }
 
-        private async Task ClearShoppingListAsync(ITelegramBotClient botClient, Message message,
+        private async Task ClearShoppingListAsync(ITelegramBotClient botClient, Update update, Message message,
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод очистки списка.");
-            File.WriteAllText(filePath, "");
+            File.WriteAllText($"{filePath}{update.Message.Chat.Id}_DataFile.txt", "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
         }
@@ -145,14 +143,14 @@ namespace TelegramBot
             await ShowShoppingListAsync(botClient, message, cancellationToken);
         }
 
-        public void IsDataFileExist(string dataFolderPath, long chatOrGroupId)
+        public void IsDataFileExistOrCreate(Update update)
         {
-            string fileName = $"{chatOrGroupId}_DataFile.txt";
-            string[] files = Directory.GetFiles(dataFolderPath);
+            string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
+            string[] files = Directory.GetFiles(filePath);
     
             if (!files.Contains(fileName))
             {
-                File.Create(Path.Combine(dataFolderPath, fileName)).Close();
+                File.Create(Path.Combine(filePath, fileName)).Close();
             }
             else
             {
