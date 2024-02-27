@@ -80,11 +80,11 @@ namespace TelegramBot
             foreach (var item in shoppingList)
             {
                 string newItem = $"{item.Product}";
-                string ChatId = $"{item.ChatId}";
+                string chatId = $"{item.ChatId}";
                 
                 if (!dataFile.Contains(newItem))
                 {
-                    dataFile += $"{newItem} : {ChatId}"+"\n";
+                    dataFile += $"{newItem} : ChatID = {chatId}"+"\n";
                 }
             }
 
