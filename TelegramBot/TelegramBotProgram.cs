@@ -145,8 +145,8 @@ namespace TelegramBot
         {
             string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
             string[] files = Directory.GetFiles(dataFolderPath);
-    
-            if (!files.Contains(fileName))
+
+            if (files.Contains(fileName))
             {
                 File.Create(Path.Combine(dataFolderPath, fileName)).Close();
                 Console.WriteLine("New Data File Created");
@@ -155,6 +155,6 @@ namespace TelegramBot
             {
                 Console.WriteLine("The File Exists");
             }
-        } // проверка на существование файла (OK)
+        } // проверка на существование файла (OK!)
     }
 }
