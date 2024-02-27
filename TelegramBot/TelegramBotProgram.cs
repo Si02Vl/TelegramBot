@@ -89,10 +89,10 @@ namespace TelegramBot
             }
             try
             { // нужен метод if чтобы по полям экземпляра, писало в соответствующий файл
-                await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
-                    cancellationToken);
-
-                await UserMessageDelete(botClient, update.Message, cancellationToken);
+                if(ShoppingList.ChatId == update.Message.Chat.Id) //ТУТ!!!!!!!
+                {await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
+                    cancellationToken);}
+                await UserMessageDelete(botClient, update.Message, cancellationToken); //тут всё ок
             }
             catch (Exception ex)
             {
