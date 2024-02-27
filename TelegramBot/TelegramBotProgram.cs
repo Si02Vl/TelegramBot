@@ -59,9 +59,9 @@ namespace TelegramBot
             return Task.CompletedTask;
         } //для обработки ошибок (ОК!)
 
-        //все чаты/группы добавляются в список экземпляров класса ShoppingList и пишутся потом беспорядочно в файл данных. придумать решение!
+        //все чаты/группы добавляются в список экземпляров класса ShoppingList и пишутся потом беспорядочно в файл данных
         //(или избавиться от класса и писать в отдельные файлы)
-        //или задать в классе поле chat Id и по этому полю сортировать в файлы
+        //или задать в классе поле chatId и по этому полю сортировать в файлы
         private async Task WritingToFile(Update update, ITelegramBotClient botClient, 
             CancellationToken cancellationToken, long chatOrGroupId)
         {
@@ -70,7 +70,8 @@ namespace TelegramBot
                     shoppingList.Add(new ShoppingList
                     {
                         Product = update.Message.Text,
-                        IsBought = false
+                        IsBought = false,
+                        ChatId = update.Message.Chat.Id
                     });
 
             string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
@@ -79,9 +80,11 @@ namespace TelegramBot
             foreach (var item in shoppingList)
             {
                 string newItem = $"{item.Product}";
+                string ChatId = $"{item.ChatId}";
+                
                 if (!dataFile.Contains(newItem))
                 {
-                    dataFile += newItem + "\n";
+                    dataFile += $"{newItem} : {ChatId}"+"\n";
                 }
             }
 
