@@ -137,10 +137,10 @@ namespace TelegramBot
         public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
             CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
-            var lines = File.ReadAllLines($"{dataFolderPath}{update.Message.Chat.Id}").Where(l => !l.Contains("<s>")).ToArray();
-            File.WriteAllLines($"{dataFolderPath}{update.Message.Chat.Id}", lines);
+            var lines = File.ReadAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt").Where(l => !l.Contains("<s>")).ToArray();
+            File.WriteAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt", lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
-        }
+        } //в классе обработчика клавиатер не правильный адрес
 
         public void IsDataFileExistOrCreate(Update update)
         {
