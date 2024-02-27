@@ -7,7 +7,7 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";    
+        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";    
         
         public List<ShoppingList> _shoppingList = new();
        
@@ -25,7 +25,6 @@ namespace TelegramBot
             if (update.Message != null)
             {
                 var message = update.Message.Text;
-                //var chatOrGroupId = update.Message.Chat.Id;
                 IsDataFileExistOrCreate(update);
                 
                 switch (message)
@@ -72,8 +71,7 @@ namespace TelegramBot
                         IsBought = false
                     });
 
-            //string filePath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/" + $"{chatOrGroupId}_DataFile.txt";
-            string dataFile = await File.ReadAllTextAsync($"{filePath}{update.Message.Chat.Id}_DataFile.txt", cancellationToken);
+            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", cancellationToken);
  
             foreach (var item in _shoppingList)
             {
@@ -86,7 +84,7 @@ namespace TelegramBot
 
             try
             {
-                await File.WriteAllTextAsync($"{filePath}{update.Message.Chat.Id}_DataFile.txt", dataFile, cancellationToken);
+                await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", dataFile, cancellationToken);
 
                 await UserMessageDelete(botClient, update.Message, cancellationToken);
             }
@@ -99,13 +97,13 @@ namespace TelegramBot
         public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage, ///////////////читает файл по глобальной переменной, переделать
             CancellationToken cancellationToken)
         {
-            if (File.ReadAllText($"{filePath}{updateMessage.Chat.Id}_DataFile.txt") != "")
+            if (File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt") != "")
             {
                 await botClient.SendTextMessageAsync(
                     updateMessage.Chat.Id,
-                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText($"{filePath}_DataFile.txt"),
+                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText($"{dataFolderPath}_DataFile.txt"),
                     cancellationToken: cancellationToken,
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{filePath}_DataFile.txt", _shoppingList),
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{dataFolderPath}_DataFile.txt", _shoppingList),
                     parseMode: ParseMode.Html);
 
                 Console.WriteLine("Вызван метод показа списка покупок.");
@@ -123,7 +121,7 @@ namespace TelegramBot
             CancellationToken cancellationToken)
         {
             Console.WriteLine("Вызван метод очистки списка.");
-            File.WriteAllText($"{filePath}{update.Message.Chat.Id}_DataFile.txt", "");
+            File.WriteAllText($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
         }
@@ -138,24 +136,25 @@ namespace TelegramBot
         public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
             CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
-            var lines = File.ReadAllLines(filePath).Where(l => !l.Contains("<s>")).ToArray();
-            File.WriteAllLines(filePath, lines);
+            var lines = File.ReadAllLines(dataFolderPath).Where(l => !l.Contains("<s>")).ToArray();
+            File.WriteAllLines(dataFolderPath, lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
         }
-
+        
         public void IsDataFileExistOrCreate(Update update)
         {
             string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
-            string[] files = Directory.GetFiles(filePath);
+            string[] files = Directory.GetFiles(dataFolderPath);
     
             if (!files.Contains(fileName))
             {
-                File.Create(Path.Combine(filePath, fileName)).Close();
+                File.Create(Path.Combine(dataFolderPath, fileName)).Close();
+                Console.WriteLine("New Data File Created");
             }
             else
             {
-                Console.WriteLine("Файл существует");
+                Console.WriteLine("The File Exists");
             }
-        }
+        } // проверка на существование файла (OK)
     }
 }
