@@ -15,11 +15,11 @@ namespace TelegramBot
             return buttonCallbackData;
         }
 
-        //нужно сравнить button_***_data из callbackquery (оставив ***) с текстом в файле
         public static async Task InlineKeyboardActionAsync(CallbackQuery callbackQuery, ITelegramBotClient botClient, 
             long chatId)
         {
-            var filePath = $"C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
+            var filePath = $"C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
+            //var filePath = $"C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
             var items = await File.ReadAllLinesAsync(filePath); 
             
             var button = InlineKeyboardDataGetting(callbackQuery); 
@@ -29,11 +29,9 @@ namespace TelegramBot
             {
                 if (items[i] == clearButtonData)
                 {
-                    // зачеркиваем при совпадении
                     items[i] = $"<s>{items[i]}</s>"; 
                     var updatedFileContent = string.Join(Environment.NewLine, items);
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
-                   //удаляем сообщение и обновляем список в чате
                     await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);
                     
                     var bot = new TelegramBotProgram();

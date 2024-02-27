@@ -7,7 +7,8 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        //public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
         public List<ShoppingList> shoppingList = new();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -58,7 +59,10 @@ namespace TelegramBot
             return Task.CompletedTask;
         } //для обработки ошибок (ОК!)
 
-        private async Task WritingToFile(Update update, ITelegramBotClient botClient,
+        //все чаты/группы добавляются в список экземпляров класса ShoppingList и пишутся потом беспорядочно в файл данных. придумать решение!
+        //(или избавиться от класса и писать в отдельные файлы)
+        //или задать в классе поле chat Id и по этому полю сортировать в файлы
+        private async Task WritingToFile(Update update, ITelegramBotClient botClient, 
             CancellationToken cancellationToken, long chatOrGroupId)
         {
             if (update.Message != null)
