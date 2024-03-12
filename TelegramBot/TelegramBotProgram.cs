@@ -95,9 +95,9 @@ namespace TelegramBot
             }
             try
             {
-            if (ShoppingList. == update.Message.Chat.Id) //ТУТ!!!!!!!
+                if (ShoppingList.ChatId == update.Message.Chat.Id) //ТУТ!!!!!!!
                 {
-                    await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
+                    await File.WriteAllTextAsync($"{dataFolderPath}_DataFile.txt_{update.Message.Chat.Id}",
                         dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
                         cancellationToken);
                     await UserMessageDelete(botClient, update.Message, cancellationToken);
