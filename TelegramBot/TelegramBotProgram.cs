@@ -59,8 +59,7 @@ namespace TelegramBot
             return Task.CompletedTask;
         } //для обработки ошибок (ОК!)
 
-        //все чаты/группы добавляются в список экземпляров класса ShoppingList и пишутся потом беспорядочно в файл данных
-        //(или избавиться от класса и писать в отдельные файлы)
+        //все чаты/группы добавляются в список экземпляров класса ShoppingList и данные пишутся потом беспорядочно в файл данных
         //или задать в классе поле chatId и по этому полю сортировать в файлы
         private async Task WritingToFile(Update update, ITelegramBotClient botClient, 
             CancellationToken cancellationToken, long chatOrGroupId) //long chatOrGroupId не нужен???
@@ -74,7 +73,7 @@ namespace TelegramBot
                         ChatId = update.Message.Chat.Id
                     });
 
-            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
+            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}_DataFile.txt_{update.Message.Chat.Id}",
                 cancellationToken);
 
             foreach (var item in shoppingList) // тут все ок
@@ -86,11 +85,17 @@ namespace TelegramBot
                 {
                     dataFile += $"{newItem} : ChatID = {chatId}"+"\n";
                 }
+                if (item.ChatId == update.Message.Chat.Id)
+                {
+                    await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
+                        dataFile,
+                        cancellationToken);
+                    await UserMessageDelete(botClient, update.Message, cancellationToken);
+                }
             }
             try
             {
-                // нужен метод if чтобы по полям экземпляра, писало в соответствующий файл
-                if (ShoppingList.ChatId == update.Message.Chat.Id) //ТУТ!!!!!!!
+            if (ShoppingList. == update.Message.Chat.Id) //ТУТ!!!!!!!
                 {
                     await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
                         dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
