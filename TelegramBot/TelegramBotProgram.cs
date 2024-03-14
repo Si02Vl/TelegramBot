@@ -7,8 +7,8 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
-        //public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        //public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
         public List<ShoppingList> shoppingList = new();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -93,7 +93,7 @@ namespace TelegramBot
                     await UserMessageDelete(botClient, update.Message, cancellationToken);
                 }
             }
-            try
+            /*try
             {
                 if (ShoppingList.ChatId == update.Message.Chat.Id) //ТУТ!!!!!!!
                 {
@@ -106,7 +106,7 @@ namespace TelegramBot
             catch (Exception ex)
             {
                 Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
-            }
+            }*/
         } //запись в файл (OK!) но разобраться с {dataFolderPath}{update.Message.Chat.Id}
 
         public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
@@ -155,7 +155,7 @@ namespace TelegramBot
             var lines = File.ReadAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt").Where(l => !l.Contains("<s>")).ToArray();
             File.WriteAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt", lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
-        } //в классе обработчика клавиатер не правильный адрес
+        } //в классе обработчика клавиатур не правильный адрес!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         public void IsDataFileExistOrCreate(Update update)
         {
