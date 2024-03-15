@@ -80,12 +80,13 @@ namespace TelegramBot
             {
                 string newItem = $"{item.Product}";
                 string chatId = $"{item.ChatId}";
+                string isBought = $"{item.IsBought}";
 
                 try
                 {
                     if (!dataFile.Contains(newItem))
                     {
-                        dataFile += $"{newItem} : ChatID = {chatId}"+"\n";
+                        dataFile += $"Product = {newItem}, ChatID = {chatId} , Bought = {isBought}\n";
                     }
                     if (item.ChatId == update.Message.Chat.Id)
                     {

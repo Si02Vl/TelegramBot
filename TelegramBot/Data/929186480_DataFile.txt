@@ -1,3 +1,1 @@
-111 : ChatID = 929186480
-222 : ChatID = 929186480
-333 : ChatID = 929186480
+Product = 147, ChatID = 929186480 , Bought = False
