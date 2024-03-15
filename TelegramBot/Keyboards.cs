@@ -25,7 +25,7 @@ public class Keyboards
             cancellationToken: cancellationToken);
     }
     
-    public static InlineKeyboardMarkup CreateInlineKeyboardFromShoppingListFile(string filePath, List<ShoppingList> shoppingList)
+    public static InlineKeyboardMarkup CreateInlineKeyboardFromShoppingListFile(string filePath) // тут написать код для замены button data
     {
         string[] lines = File.ReadAllLines(filePath);
 

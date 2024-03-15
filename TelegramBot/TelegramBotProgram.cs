@@ -84,7 +84,7 @@ namespace TelegramBot
                 {
                     if (!dataFile.Contains(newItem))
                     {
-                        dataFile += $"Product = {newItem}, ChatID = {chatId} , Bought = {isBought}\n";
+                        dataFile += $"{newItem}, ChatID = {chatId} , Bought = {isBought}\n";
                     }
                     if (item.ChatId == update.Message.Chat.Id)
                     {
@@ -111,8 +111,7 @@ namespace TelegramBot
                     updateMessage.Chat.Id,
                     $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt"),
                     cancellationToken: cancellationToken,
-                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt",
-                        shoppingList),
+                    replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt"),
                     parseMode: ParseMode.Html);
 
                 Console.WriteLine("Вызван метод показа списка покупок.");
