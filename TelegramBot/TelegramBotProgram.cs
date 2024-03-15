@@ -73,7 +73,7 @@ namespace TelegramBot
                         ChatId = update.Message.Chat.Id
                     });
 
-            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}_DataFile.txt_{update.Message.Chat.Id}",
+            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", 
                 cancellationToken);
 
             foreach (var item in shoppingList) // тут все ок
@@ -162,7 +162,7 @@ namespace TelegramBot
             string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
             string[] files = Directory.GetFiles(dataFolderPath);
 
-            if (files.Contains(fileName))
+            if (!files.Contains(fileName))
             {
                 File.Create(Path.Combine(dataFolderPath, fileName)).Close();
                 Console.WriteLine("New Data File Created");
