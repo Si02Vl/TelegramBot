@@ -80,34 +80,28 @@ namespace TelegramBot
             {
                 string newItem = $"{item.Product}";
                 string chatId = $"{item.ChatId}";
+
+                try
+                {
+                    if (!dataFile.Contains(newItem))
+                    {
+                        dataFile += $"{newItem} : ChatID = {chatId}"+"\n";
+                    }
+                    if (item.ChatId == update.Message.Chat.Id)
+                    {
+                        await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
+                            dataFile,
+                            cancellationToken);
+                        await UserMessageDelete(botClient, update.Message, cancellationToken);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
+                }
                 
-                if (!dataFile.Contains(newItem))
-                {
-                    dataFile += $"{newItem} : ChatID = {chatId}"+"\n";
-                }
-                if (item.ChatId == update.Message.Chat.Id)
-                {
-                    await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
-                        dataFile,
-                        cancellationToken);
-                    await UserMessageDelete(botClient, update.Message, cancellationToken);
-                }
             }
-            /*try
-            {
-                if (ShoppingList.ChatId == update.Message.Chat.Id) //ТУТ!!!!!!!
-                {
-                    await File.WriteAllTextAsync($"{dataFolderPath}_DataFile.txt_{update.Message.Chat.Id}",
-                        dataFile, //пишем в файл, но пишет во все подряд, по-очереди!!!!!
-                        cancellationToken);
-                    await UserMessageDelete(botClient, update.Message, cancellationToken);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
-            }*/
-        } //запись в файл (OK!) но разобраться с {dataFolderPath}{update.Message.Chat.Id}
+        } 
 
         public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
@@ -162,7 +156,7 @@ namespace TelegramBot
             string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
             string[] files = Directory.GetFiles(dataFolderPath);
 
-            if (!files.Contains(fileName))
+            if (!files.Contains(fileName)) //всегда выполняется почему?
             {
                 File.Create(Path.Combine(dataFolderPath, fileName)).Close();
                 Console.WriteLine("New Data File Created");
