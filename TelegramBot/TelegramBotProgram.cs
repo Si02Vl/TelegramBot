@@ -7,8 +7,8 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        //public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
-        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        //public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
         public List<ShoppingList> shoppingList = new();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -59,8 +59,6 @@ namespace TelegramBot
             return Task.CompletedTask;
         } //для обработки ошибок (ОК!)
 
-        //все чаты/группы добавляются в список экземпляров класса ShoppingList и данные пишутся потом беспорядочно в файл данных
-        //или задать в классе поле chatId и по этому полю сортировать в файлы
         private async Task WritingToFile(Update update, ITelegramBotClient botClient, 
             CancellationToken cancellationToken, long chatOrGroupId) //long chatOrGroupId не нужен???
         {
@@ -135,7 +133,7 @@ namespace TelegramBot
             File.WriteAllText($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
-        } //очистка файла (OK!) но разобраться с {dataFolderPath}{update.Message.Chat.Id}
+        } //очистка файла (OK!)
 
         private async Task UserMessageDelete(ITelegramBotClient botClient, Message message,
             CancellationToken cancellationToken)
@@ -155,11 +153,11 @@ namespace TelegramBot
         public void IsDataFileExistOrCreate(Update update)
         {
             string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
-            string[] files = Directory.GetFiles(dataFolderPath);
+            string filePath = Path.Combine(dataFolderPath, fileName);
 
-            if (!files.Contains(fileName)) //всегда выполняется почему?
+            if (!File.Exists(filePath))
             {
-                File.Create(Path.Combine(dataFolderPath, fileName)).Close();
+                File.Create(filePath).Close();
                 Console.WriteLine("New Data File Created");
             }
             else
