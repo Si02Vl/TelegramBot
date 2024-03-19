@@ -7,8 +7,8 @@ namespace TelegramBot
 {
     public class TelegramBotProgram
     {
-        public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
-        //public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        //public string dataFolderPath = "C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
+        public string dataFolderPath = "C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/";
         public List<ShoppingList> shoppingList = new();
 
         public async Task MessageUpdateAsync(ITelegramBotClient botClient, Update update,
@@ -46,7 +46,7 @@ namespace TelegramBot
                         break;
 
                     default:
-                        await WritingToFile(update, botClient, cancellationToken, update.Message.Chat.Id);
+                        await WriteToFile(update, botClient, cancellationToken);
                         break;
                 }
             }
@@ -59,35 +59,30 @@ namespace TelegramBot
             return Task.CompletedTask;
         } //для обработки ошибок (ОК!)
 
-        private async Task WritingToFile(Update update, ITelegramBotClient botClient, 
-            CancellationToken cancellationToken, long chatOrGroupId) //long chatOrGroupId не нужен???
+        private async Task WriteToFile(Update update, ITelegramBotClient botClient, 
+            CancellationToken cancellationToken)
         {
-            if (update.Message != null)
-                if (update.Message.Text != null)
-                    shoppingList.Add(new ShoppingList
-                    {
-                        Product = update.Message.Text,
-                        IsBought = false,
-                        ChatId = update.Message.Chat.Id
-                    });
+            shoppingList.Add(new ShoppingList
+            {
+                Product = update.Message.Text,
+                IsBought = false,
+                ChatId = update.Message.Chat.Id
+            });
 
-            string dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", 
+            var dataFile = await File.ReadAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", 
                 cancellationToken);
 
-            foreach (var item in shoppingList) // тут все ок
+            foreach (var item in shoppingList)
             {
-                string newItem = $"{item.Product}";
-                string chatId = $"{item.ChatId}";
-                string isBought = $"{item.IsBought}";
+                var newItem = $"{item.Product}";
+                var chatId = $"{item.ChatId}";
+                var isBought = $"{item.IsBought}";
 
                 try
                 {
                     if (!dataFile.Contains(newItem))
                     {
                         dataFile += $"{newItem}, ChatID = {chatId} , Bought = {isBought}\n";
-                    }
-                    if (item.ChatId == update.Message.Chat.Id)
-                    {
                         await File.WriteAllTextAsync($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt",
                             dataFile,
                             cancellationToken);
@@ -98,7 +93,6 @@ namespace TelegramBot
                 {
                     Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
                 }
-                
             }
         } 
 
@@ -132,6 +126,7 @@ namespace TelegramBot
             File.WriteAllText($"{dataFolderPath}{update.Message.Chat.Id}_DataFile.txt", "");
             await botClient.SendTextMessageAsync(message.Chat.Id, "Список очищен.",
                 cancellationToken: cancellationToken);
+            shoppingList.Clear();
         } //очистка файла (OK!)
 
         private async Task UserMessageDelete(ITelegramBotClient botClient, Message message,
@@ -147,7 +142,7 @@ namespace TelegramBot
             var lines = File.ReadAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt").Where(l => !l.Contains("<s>")).ToArray();
             File.WriteAllLines($"{dataFolderPath}{message.Chat.Id}_DataFile.txt", lines);
             await ShowShoppingListAsync(botClient, message, cancellationToken);
-        } //в классе обработчика клавиатур не правильный адрес!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        } 
 
         public void IsDataFileExistOrCreate(Update update)
         {
