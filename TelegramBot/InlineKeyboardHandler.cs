@@ -18,7 +18,8 @@ namespace TelegramBot
         //нужно сравнить button_***_data из callbackquery (оставив ***) с текстом в файле
         public static async Task InlineKeyboardActionAsync(CallbackQuery callbackQuery, ITelegramBotClient botClient, long chatId)
         {
-            var filePath = $"C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
+            //var filePath = $"C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
+            var filePath = $"C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
             var items = await File.ReadAllLinesAsync(filePath); 
     
             var button = InlineKeyboardDataGetting(callbackQuery); 

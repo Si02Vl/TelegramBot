@@ -1,1 +1,3 @@
-258, ChatID = 929186480 , Bought = False
+Товар1, ChatID = 929186480 , Bought = False
+<s>258</s>
+Товар2, ChatID = 929186480 , Bought = False
