@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 using File = System.IO.File;
 using System.Text.RegularExpressions;
-    
+
 namespace TelegramBot
 {
     

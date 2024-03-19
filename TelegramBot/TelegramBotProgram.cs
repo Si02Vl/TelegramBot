@@ -78,7 +78,7 @@ namespace TelegramBot
                 var chatId = $"{item.ChatId}";
                 var isBought = $"{item.IsBought}";
 
-                try
+                try //убрать проверку по содержанию, просто ПЕРЕЗАПИСЫВАТЬ из класса в файл
                 {
                     if (!dataFile.Contains(newItem))
                     {
