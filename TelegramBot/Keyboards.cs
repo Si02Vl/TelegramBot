@@ -29,9 +29,13 @@ public class Keyboards
     {
         string[] lines = File.ReadAllLines(filePath);
 
-        var buttons = lines.Select(line => new[]
+        var buttons = lines.Select(line => 
         {
-            InlineKeyboardButton.WithCallbackData(line.Replace("<s>", "").Replace("</s>", ""), $"{line}_buttonData")
+            string firstWord = line.Split(',').First();
+            return new[]
+            {
+                InlineKeyboardButton.WithCallbackData(firstWord.Replace("<s>", "").Replace("</s>", ""), $"{firstWord}_buttonData")
+            };
         }).ToArray();
         return new InlineKeyboardMarkup(buttons);
     }

@@ -99,11 +99,20 @@ namespace TelegramBot
         public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
             CancellationToken cancellationToken)
         {
+            string[] lines = File.ReadAllLines($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt");
+
+            var onlyProductName = lines.Select(line => 
+            {
+                string firstWord = line.Split(',').First();
+                return firstWord;
+                
+            }).ToArray();
+            
             if (File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt") != "")
             {
                 await botClient.SendTextMessageAsync( 
                     updateMessage.Chat.Id,
-                    $"<u><b>Список покупок:\n\r</b></u>" + File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt"),
+                    $"<u><b>Список покупок:\n\r</b></u>" + string.Join("\n\r", onlyProductName),
                     cancellationToken: cancellationToken,
                     replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt"),
                     parseMode: ParseMode.Html);
