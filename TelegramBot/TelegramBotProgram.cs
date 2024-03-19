@@ -24,7 +24,7 @@ namespace TelegramBot
             if (update.Message != null)
             {
                 var message = update.Message.Text;
-                IsDataFileExistOrCreate(update);
+                //IsDataFileExistOrCreate(update);
 
                 switch (message)
                 {
@@ -96,23 +96,34 @@ namespace TelegramBot
             }
         } 
 
-        public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage,
+        public async Task ShowShoppingListAsync(ITelegramBotClient botClient, Message updateMessage, //нужна проверка по chatId
             CancellationToken cancellationToken)
         {
             string[] lines = File.ReadAllLines($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt");
 
-            var onlyProductName = lines.Select(line => 
+            var onlyProductsNamesForMessage = lines.Select(line => 
             {
                 string firstWord = line.Split(',').First();
                 return firstWord;
-                
             }).ToArray();
+            
+            List<string> productListForThisChatId = new List<string>();
             
             if (File.ReadAllText($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt") != "")
             {
+                //совпадения по chatId пишем в новый список и потом отправляем в сообщение
+                
+                foreach (string product in onlyProductsNamesForMessage)
+                {
+                    if (product == updateMessage.Chat.Id.ToString())
+                    {
+                        productListForThisChatId.Add(product);
+                    }
+                }
+                 
                 await botClient.SendTextMessageAsync( 
                     updateMessage.Chat.Id,
-                    $"<u><b>Список покупок:\n\r</b></u>" + string.Join("\n\r", onlyProductName),
+                    $"<u><b>Список покупок:\n\r</b></u>" + string.Join("\n\r", onlyProductsNamesForMessage),
                     cancellationToken: cancellationToken,
                     replyMarkup: Keyboards.CreateInlineKeyboardFromShoppingListFile($"{dataFolderPath}{updateMessage.Chat.Id}_DataFile.txt"),
                     parseMode: ParseMode.Html);
@@ -145,6 +156,7 @@ namespace TelegramBot
                 cancellationToken: cancellationToken);
         } //удаление сообщений в чате (ОК!)
 
+        
         public async Task DeletePurchasedItems(ITelegramBotClient botClient, Message message,
             CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
@@ -153,7 +165,7 @@ namespace TelegramBot
             await ShowShoppingListAsync(botClient, message, cancellationToken);
         } 
 
-        public void IsDataFileExistOrCreate(Update update)
+        /*public void IsDataFileExistOrCreate(Update update)
         {
             string fileName = $"{update.Message.Chat.Id}_DataFile.txt";
             string filePath = Path.Combine(dataFolderPath, fileName);
@@ -167,6 +179,6 @@ namespace TelegramBot
             {
                 Console.WriteLine("The File Exists");
             }
-        } // проверка на существование файла (OK!)
+        } */
     }
 }

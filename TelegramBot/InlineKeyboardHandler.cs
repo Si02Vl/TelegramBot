@@ -37,9 +37,11 @@ namespace TelegramBot
                 if (onlyProductsName[i] == clearButtonData)
                 {
                     // зачеркиваем при совпадении
-                    onlyProductsName[i] = $"<s>{onlyProductsName[i]}</s>"; 
-                    var updatedFileContent = string.Join(Environment.NewLine, onlyProductsName);
-                    await File.WriteAllTextAsync(filePath, updatedFileContent);
+                    onlyProductsName[i] = $"<s>{onlyProductsName[i]}</s>, ChatID = {chatId} , Bought = Yes!\n"; 
+                    
+                    var updatedFileContent = string.Join(Environment.NewLine, product); // пишет не совсем то, что нужно 
+                   
+                    await File.WriteAllTextAsync(filePath, product);
                     //удаляем сообщение и обновляем список в чате
                     await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);
             
