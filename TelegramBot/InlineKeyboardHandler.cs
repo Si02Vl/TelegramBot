@@ -20,26 +20,25 @@ namespace TelegramBot
         {
             //var filePath = $"C:/Users/Si02/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
             var filePath = $"C:/Users/user/RiderProjects/TelegramBot_Si02/TelegramBot/Data/{chatId}_DataFile.txt";
-            var items = await File.ReadAllLinesAsync(filePath); 
+            var product = await File.ReadAllLinesAsync(filePath); 
+            
+            var onlyProductsName = product.Select(line => 
+            {
+                string firstWord = line.Split(',').First();
+                return firstWord;
+                
+            }).ToArray();
     
             var button = InlineKeyboardDataGetting(callbackQuery); 
-            var pattern = ",";
-            var replacer = " "; 
-            var clearButtonData = Regex.Replace(button, pattern, replacer); 
-
-            int index = button.IndexOf(' ');
-            if (index >= 0)
+            var clearButtonData = button.Split("_").First(); //до этого момента работает
+            
+            for (int i = 0; i < onlyProductsName.Length; i++)
             {
-                clearButtonData = button.Substring(0, index); // Обрезаем строку после первого слова
-            }
-    
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i] == clearButtonData)
+                if (onlyProductsName[i] == clearButtonData)
                 {
                     // зачеркиваем при совпадении
-                    items[i] = $"<s>{items[i]}</s>"; 
-                    var updatedFileContent = string.Join(Environment.NewLine, items);
+                    onlyProductsName[i] = $"<s>{onlyProductsName[i]}</s>"; 
+                    var updatedFileContent = string.Join(Environment.NewLine, onlyProductsName);
                     await File.WriteAllTextAsync(filePath, updatedFileContent);
                     //удаляем сообщение и обновляем список в чате
                     await botClient.DeleteMessageAsync(chatId, callbackQuery.Message.MessageId);

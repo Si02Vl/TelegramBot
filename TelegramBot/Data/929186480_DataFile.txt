@@ -1,5 +1,0 @@
-1212 5555, ChatID = 929186480 , Bought = False
-13, ChatID = 929186480 , Bought = False
-15, ChatID = 929186480 , Bought = False
-85, ChatID = 929186480 , Bought = False
-852, ChatID = 929186480 , Bought = False
